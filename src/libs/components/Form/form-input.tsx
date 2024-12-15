@@ -55,6 +55,7 @@ export default function FormInput(props: IProps) {
                     onInput={(e) => {
                         changed(e.currentTarget.value);
                     }}
+                    spellcheck={false}
                 />
             );
         } else if (props.type === "textarea") {
@@ -67,6 +68,7 @@ export default function FormInput(props: IProps) {
                     onInput={(e) => {
                         changed(e.currentTarget.value);
                     }}
+                    spellcheck={false}
                 />
             );
         } else if (props.type === "number") {

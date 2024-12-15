@@ -3,7 +3,7 @@
  * @Author       : Yp Z
  * @Date         : 2023-07-29 15:17:15
  * @FilePath     : /src/model/rules.ts
- * @LastEditTime : 2024-08-26 13:18:55
+ * @LastEditTime : 2024-12-15 19:48:53
  * @Description  : 
  */
 import * as api from "@/api";
@@ -11,6 +11,8 @@ import { fb2p, getBlocksByIDs } from "@/libs/query";
 
 import { Caret } from "@/utils/const";
 import { renderTemplate, VAR_NAMES } from "./templating";
+import { fetchPost, showMessage } from "siyuan";
+import { request, sql } from "@/api";
 
 
 export abstract class MatchRule implements IDynamicRule {
@@ -66,7 +68,7 @@ const matchIDFormat = (id: string) => {
 }
 
 
-type TBacklinkProcess =  '' | 'fb2p' | 'b2doc';
+type TBacklinkProcess = '' | 'fb2p' | 'b2doc';
 export class Backlinks extends MatchRule {
 
     id: string;
@@ -209,11 +211,95 @@ class Attr extends MatchRule {
 }
 
 
+
+
+class JSQuery extends MatchRule {
+    constructor(code: string) {
+        super("js");
+        this.updateInput(code);
+    }
+
+    updateInput(code: any) {
+        this.input = code;
+    }
+
+    validateInput(): boolean {
+        return true;
+    }
+
+    async fetch(): Promise<Block[]> {
+        this.eof = true;
+        if (!this.input) {
+            return [];
+        }
+        let inputCode = renderTemplate(this.input);
+        const code = `
+        async function main(){
+            ${inputCode}
+        }
+        return main();
+        `;
+        const kits = {
+            request: request, // request backend api
+            sql: sql, // fetch sql backend api
+            where: async (where: string) => {
+                return sql(`select * from blocks where ${where}`);
+            },
+            backlink: async (id: BlockId, limit?: number) => {
+                return sql(`
+                select * from blocks where id in (
+                    select block_id from refs where def_block_id = '${id}'
+                ) order by updated desc ${limit ? `limit ${limit}` : ''};
+                `);
+            },
+            attr: async (name: string, val?: string, valMatch: '=' | 'like' = '=') => {
+                return sql(`
+                SELECT B.*
+                FROM blocks AS B
+                WHERE B.id IN (
+                    SELECT A.block_id
+                    FROM attributes AS A
+                    WHERE A.name = '${name}'
+                    ${val ? `AND A.value ${valMatch} '${val}'` : ''}
+                );
+                `);
+            }
+        }
+        let result: Block[] = [];
+
+        try {
+            let func = new Function('kits', 'fetchPost', code);
+            let data = await func(kits, fetchPost);
+            console.debug('JS result:', data);
+            if (Array.isArray(data) && data?.length > 0) {
+                if (typeof data[0] === 'string') {
+                    if (matchIDFormat(data[0])) {
+                        result = await getBlocksByIDs(...data);
+                    } else {
+                        showMessage(((`JS 查询返回结果必须是块/块ID的列表!`)), 3000, 'error');
+                    }
+                } else {
+                    result = data;
+                }
+            } else {
+                result = data;
+            }
+        } catch (e) {
+            console.error('JS Error:', e);
+            showMessage(`JavaScript Error: ${e.message}`, 5000, 'error');
+        }
+
+        return result ?? [];
+    }
+}
+
+
 export const getRule = (dynamicRule: IDynamicRule): MatchRule => {
     const maps = {
         'sql': SQL,
         'backlinks': Backlinks,
-        'attr': Attr
+        'attr': Attr,
+        'js': JSQuery
     };
     const Rule = maps[dynamicRule.type];
     if (!Rule) return null;

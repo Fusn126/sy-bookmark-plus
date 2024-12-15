@@ -1,7 +1,8 @@
 code_files:
 - './src/**/*.ts'
 - './src/**/*.tsx'
-dict: {}
+dict:
+  - 思源 -> SiYuan
 export_dir: src/types
 i18n_dir: public/i18n
 i18n_pattern: \(\(`(.+?)`\)\)

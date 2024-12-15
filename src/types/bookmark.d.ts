@@ -33,7 +33,7 @@ interface IItemCore {
 
 type TBookmarkGroupType = 'normal' | 'dynamic' | 'composed';
 
-type TRuleType = 'sql' | 'backlinks' | 'attr';
+type TRuleType = 'sql' | 'backlinks' | 'attr' | 'js';
 interface IDynamicRule {
     type: TRuleType;
     input: string;
