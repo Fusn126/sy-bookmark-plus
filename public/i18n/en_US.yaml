@@ -115,6 +115,7 @@ ruletype:
   sql: SQL
   backlinks: Backlinks
   attr: Block Attributes
+  js: Javascript
 template:
   sql:
     random: Random Roam

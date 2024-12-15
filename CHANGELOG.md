@@ -1,5 +1,10 @@
 ## Changelog
 
+## v1.4.1
+
+- ✨ feat: 添加 javascritp 查询规则
+- ✨ feat: 在 globalThis 上挂载一个 BookmarkPlusSDK 对象
+
 ## v1.3.3
 
 - ✨ feat: 数据库显示为其标题

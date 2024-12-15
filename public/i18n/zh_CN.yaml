@@ -113,6 +113,7 @@ ruletype:
   sql: SQL
   backlinks: 反向链接
   attr: 块属性
+  js: Javascript
 template:
   sql:
     random: 随机漫游

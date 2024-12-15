@@ -239,7 +239,7 @@ class JSQuery extends MatchRule {
         }
         return main();
         `;
-        const kits = {
+        const kit = {
             request: request, // request backend api
             sql: sql, // fetch sql backend api
             where: async (where: string) => {
@@ -268,8 +268,8 @@ class JSQuery extends MatchRule {
         let result: Block[] = [];
 
         try {
-            let func = new Function('kits', 'fetchPost', code);
-            let data = await func(kits, fetchPost);
+            let func = new Function('kit', 'fetchPost', code);
+            let data = await func(kit, fetchPost);
             console.debug('JS result:', data);
             if (Array.isArray(data) && data?.length > 0) {
                 if (typeof data[0] === 'string') {
