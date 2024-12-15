@@ -3,7 +3,7 @@
  * @Author       : frostime
  * @Date         : 2024-06-12 19:48:53
  * @FilePath     : /src/index.ts
- * @LastEditTime : 2024-10-03 14:55:24
+ * @LastEditTime : 2024-12-15 20:04:24
  * @Description  : 
  */
 import {
@@ -27,6 +27,7 @@ import { setI18n } from "@/utils/i18n";
 import "@/index.scss";
 import { isMobile } from "./utils";
 import { provide, purge } from "./libs/inject";
+import { loadSdk, unloadSdk } from "./sdk";
 
 let model: BookmarkDataModel;
 
@@ -101,9 +102,11 @@ export default class PluginBookmarkPlus extends Plugin {
             }
         });
 
+        // useSdk(this);
+        loadSdk();
     }
 
-    replaceDefaultBookmark() {
+    private replaceDefaultBookmark() {
         updateStyleDom('hide-bookmark', `
         .dock span[data-type="bookmark"] {
             display: none;
@@ -123,6 +126,7 @@ export default class PluginBookmarkPlus extends Plugin {
     }
 
     onunload(): void {
+        unloadSdk();
         purge();
         destroyBookmark();
         bookmarkKeymap.custom = bookmarkKeymap.default;

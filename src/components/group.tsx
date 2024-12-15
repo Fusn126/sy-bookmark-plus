@@ -251,7 +251,7 @@ const Group: Component<Props> = (props) => {
         if (isDynamicGroup()) {
             let type: "textline" | "textarea" = 'textline';
             let height = null;
-            if (props.group.rule.type === 'sql') {
+            if (props.group.rule.type === 'sql' || props.group.rule.type === 'js') {
                 type = 'textarea';
                 height = "300px";
             }

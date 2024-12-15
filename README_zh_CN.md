@@ -1,11 +1,12 @@
+
 本插件实现了一个更加用户友好的书签功能。支持拖放添加、书签组管理、复制链接、动态查询等功能。
 
 > 🔔 注意！本插件默认会屏蔽侧边栏当中思源的内置书签按钮！你可以在设置当中禁用这一默认行为。
 
 以下介绍最核心的功能，其他细节功能请自行探索。
 
-> - 如果图片无法显示，可以访问 [线上文档](https://flowus.cn/share/d84d5d98-cc4c-471b-ba2b-62338bb88511?code=80RAFK) 查看
-> - 如果您对本项目还满意，欢迎来[Github主页](https://github.com/frostime/sy-bookmark-plus)为项目点 star
+> * 如果图片无法显示，可以访问 [线上文档](https://flowus.cn/share/d84d5d98-cc4c-471b-ba2b-62338bb88511?code=80RAFK) 查看
+> * 如果您对本项目还满意，欢迎来[Github主页](https://github.com/frostime/sy-bookmark-plus)为项目点 star
 
 📝 更新日志见: [CHANGELOG.md](./CHANGELOG.md)
 
@@ -26,15 +27,47 @@
     2. 容器首个子块：当搜索到的引用块为列表项、引述块的第一个子块时，显示完整的容器块
     3. 显示为文档块：显示引用块所在的文档，而非引用块本身
 
-    > 注：如果你对「后处理方案」表示疑惑，不能理解，那么请参考 [Q&A小节](#反向链接规则的后处理方案是什么)
-
+    > 注：如果你对「后处理方案」表示疑惑，不能理解，那么请参考 [Q&amp;A 小节](#反向链接规则的后处理方案是什么)
+    >
   * 块属性：查询指定块属性，输入需要查询的块属性，可以是：
 
-    1. `<属性名>`，例如 `custom-b` ，返回所有含有 `custom-b` 自定义属性的块
-    2. `<属性名>=<val>`，例如 `bookmark=测试`，返回所有「测试」书签内的块
-    3. `<属性名> like <val>`
+    1. ​`<属性名>`​，例如 `custom-b`​ ，返回所有含有 `custom-b`​ 自定义属性的块
+    2. ​`<属性名>=<val>`​，例如 `bookmark=测试`​，返回所有「测试」书签内的块
+    3. ​`<属性名> like <val>`​
+  * Javascript：执行编写的 javascript 代码，`return`​ 一个 `Block`​ 的数组，或者 `Block Id`​ 的数组
 
-![](./asset/newgroup.png)
+    * 关于 Javascript 查询，详细请阅读后面的说明
+
+​![](asset/newgroup.png)​
+
+### Javascript 查询
+
+javascript 查询中编写的代码，会被放到一个 `async`​ 函数当中，他需要返回一个 `Block[]`​ 数组（或者 Block ID 的数组）。
+
+```js
+async function main(){
+    ${inputCode}
+}
+return main();
+```
+
+在代码中，可以访问一个 `kit`​ 对象，内置了一些常用的查询函数。
+
+```ts
+const kit: {
+    request: (url: string, data: any) => Promise<unknown>, // request backend api
+    sql: (sqlCode: string) => Promise<unknown[]>; // fetch sql backend api
+    backlink: (id: BlockId, limit?: number) => Promise<Block[]>;
+    attr: (name: string, val?: string, valMatch?: '=' | 'like') => Promise<Block[]>
+};
+```
+
+⭐ 更加推荐和 `Query & View`​ 插件配合使用，利用插件提供的 `Query`​ 来进行查询。例如以下的代码：
+
+```js
+let todo = await Query.task(Query.utils.thisYear(), 64);
+return todo.sorton('created', 'desc');
+```
 
 ## 添加项目
 
@@ -48,7 +81,7 @@
     1. 从剪贴板中添加：你可以复制一个块的 ID、引用、链接，插件会自动识别并将其添加到书签组中
     2. 添加当前文档块：会将当前正在编辑的文档添加到书签组中
 
-![](./asset/add.gif)
+​![](asset/add.gif)​
 
 ### 动态组
 
@@ -57,20 +90,19 @@
 1. 全局更新：点击顶栏的更新按钮，更新所有的书签组
 2. 右键菜单：点击动态组右键菜单，重新在当前组中执行查询，并获取最新的书签项目
 
-![](./asset/dynamic-group.gif)
+​![](asset/dynamic-group.gif)​
 
 ### 变量渲染
 
-在动态组中，支持基于 `{{VarName}}` 的变量渲染。变量渲染允许你在规则中插入一些动态变量，这些变量会在渲染时被替换为实际的值。目前支持的变量包括：
+在动态组中，支持基于 `{{VarName}}`​ 的变量渲染。变量渲染允许你在规则中插入一些动态变量，这些变量会在渲染时被替换为实际的值。目前支持的变量包括：
 
-* `{{CurDocId}}`：当前活动文档的 ID
-* `{{CurRootId}}`：`{{CurDocId}}` 的别名，二者等价
-* `{{yyyy}}`：当前年份（四位数）
-* `{{MM}}`：当前月份（两位数）
-* `{{dd}}`：当前日期（两位数）
-* `{{yy}}`：当前年份的后两位数
-* `{{today}}`：当前日期（等价于 `{{yyyy}}{{MM}}{{dd}}`）
-
+* ​`{{CurDocId}}`​：当前活动文档的 ID
+* ​`{{CurRootId}}`​：`{{CurDocId}}`​ 的别名，二者等价
+* ​`{{yyyy}}`​：当前年份（四位数）
+* ​`{{MM}}`​：当前月份（两位数）
+* ​`{{dd}}`​：当前日期（两位数）
+* ​`{{yy}}`​：当前年份的后两位数
+* ​`{{today}}`​：当前日期（等价于 `{{yyyy}}{{MM}}{{dd}}`​）
 
 案例1，SQL 规则：查看本月所有更新
 
@@ -97,33 +129,27 @@ custom-dailynote-% like {{yyyy}}{{MM}}%
 * 点击项目，跳转对应的块
 * 悬浮在块标上，可以预览块的内容
 
-  ![](./asset/hover.png)
-
+  ​![](asset/hover.png)​
 * 拖放调整书签位置
 
-  ![](./asset/drag-move.gif)
-
+  ​![](asset/drag-move.gif)​
 * 右键菜单中支持更多功能~
 
-  ![](./asset/contextmenu.png)
-
+  ​![](asset/contextmenu.png)​
 
 ## 插件设置
 
-![](./asset/setting.png)
-
+​![](asset/setting.png)​
 
 * 替换内置书签：如果开启，在插件在启动的时候会自动屏蔽默认的思源书签，并且覆盖书签的快捷键（默认为 Alt + 3）
 * 展示样式：插件提供了两种样式
 
   * 书签样式：和思源内置的书签一致
 
-    ![](./asset/bookmark-view.png)
-
+    ​![](asset/bookmark-view.png)​
   * 卡片样式：各个书签组以卡片的样式呈现
 
-    ![](./asset/card-view.png)
-
+    ​![](asset/card-view.png)​
 * 隐藏项目：书签项目可能由于被删除、或者块所在的笔记本被关闭而无法被索引到
 
   * 隐藏关闭项目：开启后，隐藏那些来自被关闭的笔记本中的项目
@@ -136,20 +162,20 @@ custom-dailynote-% like {{yyyy}}{{MM}}%
 
 ## Styling
 
-插件当中的每个组件部分都有特定的 `class` 名称，如果有自定义需求（例如修改字体）可以自行编写 css 样式并放入思源的「代码片段」中。
+插件当中的每个组件部分都有特定的 `class`​ 名称，如果有自定义需求（例如修改字体）可以自行编写 css 样式并放入思源的「代码片段」中。
 
-* 顶层：`.custom-bookmark-body`
+* 顶层：`.custom-bookmark-body`​
 
-  * 卡片模式：`.custom-bookmark-body.card-view`
+  * 卡片模式：`.custom-bookmark-body.card-view`​
   * 卡片模式下的背景颜色基于两个 css 变量：
 
-    * 底层背景颜色：`--fmisc-bookmark-body-bg__card-view`，默认为 `var(--b3-theme-surface-light)`
-    * 卡片背景颜色：`--fmisc-bookmark-group-bg__card-view`，默认为 `var(--b3-theme-background)`
-* 各个书签组：`.custom-bookmark-group`
+    * 底层背景颜色：`--fmisc-bookmark-body-bg__card-view`​，默认为 `var(--b3-theme-surface-light)`​
+    * 卡片背景颜色：`--fmisc-bookmark-group-bg__card-view`​，默认为 `var(--b3-theme-background)`​
+* 各个书签组：`.custom-bookmark-group`​
 
-  * 书签组的标头：`.custom-bookmark-group-header`
-  * 书签列表：`.custom-bookmark-group-list`
-* 各个书签项目：`.custom-bookmark-item`
+  * 书签组的标头：`.custom-bookmark-group-header`​
+  * 书签列表：`.custom-bookmark-group-list`​
+* 各个书签项目：`.custom-bookmark-item`​
 
 案例：
 
@@ -172,16 +198,15 @@ custom-dailynote-% like {{yyyy}}{{MM}}%
 
 ## 🤔 Q&A
 
-
 ### 「反向链接」规则的「后处理方案」是什么？
 
 **显示为文档块** 比较好理解，也就是说在书签项目中显示引用块来自的文档，而非引用块本身。如果出现多个引用块来自同一个文档的情况，只显示一个文档块项目，而不会重复显示。
 
 **容器首个子块** 的含义是：如果查询到的块为某个容器块的第一个段落子块，那么我们将视为查询到容器块本身。
 
-![](https://b3logfile.com/file/2024/05/siyuan/1646569891270/assets/image-20240506185002-bcpih90.png?imageView2/2/interlace/1/format/webp)
+​![](https://b3logfile.com/file/2024/05/siyuan/1646569891270/assets/image-20240506185002-bcpih90.png?imageView2/2/interlace/1/format/webp)​
 
-这里举一个例子：在某个列表项当中引用了 `文档X`。
+这里举一个例子：在某个列表项当中引用了 `文档X`​。
 
 ```md
 - Foo
@@ -191,7 +216,7 @@ custom-dailynote-% like {{yyyy}}{{MM}}%
 - Boo
 ```
 
-如果使用 SQL 等查询文档X的反链，那么最后会查询到 `[[文档X]]` 这个**段落块**身上，也就是：
+如果使用 SQL 等查询文档X的反链，那么最后会查询到 `[[文档X]]`​ 这个**段落块**身上，也就是：
 
 ```md
 [[文档X]]
@@ -209,7 +234,7 @@ custom-dailynote-% like {{yyyy}}{{MM}}%
 
 * 新建书签组
 * 选择动态组、属性规则
-* 属性规则中填写 `bookmark`，或者 `bookmark=<书签名称>`
+* 属性规则中填写 `bookmark`​，或者 `bookmark=<书签名称>`​
 
 ### 能不能修改书签项目的显示内容？
 
@@ -225,6 +250,6 @@ custom-dailynote-% like {{yyyy}}{{MM}}%
 
 > 注: 在移动端中将无法替换内置的书签功能，只能通过插件面板单独打。
 
-![](asset/mobile.png)
+​![](asset/mobile.png)​
 
 不过由于插件开发在桌面端上，所以移动端中有些操作可能会有些不方便。

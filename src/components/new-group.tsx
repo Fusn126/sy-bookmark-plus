@@ -45,7 +45,7 @@ const RuleInput = () => {
                     style={{ 'flex': 1, 'width': '100%' }}
                 />
             );
-        } else if (ruleType() === 'sql') {
+        } else if (ruleType() === 'sql' || ruleType() === 'js') {
             return (
                 <Form.Input
                     key="ruleInput"
@@ -163,6 +163,12 @@ const RuleEditor = () => {
                     // input: "textinput"
                 }
 
+            case 'js':
+                return {
+                    desc: ((`使用 Javascript 代码查询, 返回 Block[] 列表`)),
+                    direction: "row",
+                }
+
             default:
                 break;
         }
@@ -187,6 +193,7 @@ const RuleEditor = () => {
                         sql: i18n.ruletype.sql,
                         backlinks: i18n.ruletype.backlinks,
                         attr: i18n.ruletype.attr,
+                        js: 'JavaScript'
                     }}
                     changed={(v) => {
                         setRule({ type: v, input: '' });
@@ -200,6 +207,7 @@ const RuleEditor = () => {
                 description={aboutRule().desc}
                 direction={aboutRule().direction}
                 action={
+                    // 选择模板的 action 下拉框
                     <Show when={['sql', 'attr'].includes(ruleType())}>
                         <div style={{
                             display: "flex",
