@@ -196,6 +196,19 @@ custom-dailynote-% like {{yyyy}}{{MM}}%
   }
   ```
 
+## `BookmarkPlusSDK`​
+
+在插件 1.4.1 版本之后，插件会在全局挂载一个 `BookmarkPlusSDK`​ 的变量，可以用来列出书签组中的项目。
+
+* ​`BookmarkPlus.SDK.listGroups()`​：列出所有书签组，每个书签组包含
+
+  * ​`id`​
+  * ​`name`​
+  * ​`expand`​：书签组的折叠状态
+  * ​`hidden`​：书签组是否隐藏
+  * ​`type`​：normal 或者 dynamic
+* ​`BookmarkPlus.SDK.listItems(id: string)`​：传入书签组的 ID，返回书签组中所有块的 ID
+
 ## 🤔 Q&A
 
 ### 「反向链接」规则的「后处理方案」是什么？

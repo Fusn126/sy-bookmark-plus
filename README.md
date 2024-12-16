@@ -195,6 +195,19 @@ Example:
   }
   ```
 
+## `BookmarkPlusSDK`​
+
+After version 1.4.1 of the plugin, the plugin will globally mount a variable `BookmarkPlusSDK`​, which can be used to list the items in the bookmark groups.
+
+* ​`BookmarkPlus.SDK.listGroups()`​: Lists all bookmark groups, each bookmark group contains
+
+  * ​`id`​
+  * ​`name`​
+  * ​`expand`​: The collapsed state of the bookmark group
+  * ​`hidden`​: Whether the bookmark group is hidden
+  * ​`type`​: normal or dynamic
+* ​`BookmarkPlus.SDK.listItems(id: string)`​: Pass in the ID of the bookmark group and return the IDs of all the blocks in the bookmark group
+
 ## 🤔 Q&A
 
 ### What is the "Post process" for the "Backlink" rule?
