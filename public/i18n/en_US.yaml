@@ -1,130 +1,141 @@
----
+bookmark:
+  cache: Cache Current Bookmarks
+  delete:
+    desc: ⚠️ Cannot be recovered after deletion! Are you sure you want to delete?
+    title: Delete the bookmark group {0}[{1}]?
+  logo:
+    add: Add Bookmark Group
+    collapse: Collapse Ctrl+↑
+    expand: Expand Ctrl+↓
+    min: Minimize Ctrl+W
+    name: Bookmark
+    refresh: Refresh
+    setting: Settings
+  new: Create New Bookmark Group
+bookmarktype:
+  composed: Composite Bookmark
+  dynamic: Dynamic Bookmark
+  normal: Normal Bookmark
+group:
+  bottom: Move to Bottom
+  copylink: Copy as Link List
+  copyref: Copy as Reference List
+  currentdoc: Add Current Document Block
+  delete: Delete Bookmark Group
+  docflow: Document Flow
+  down: Move Down
+  edit: Edit Rule Value
+  fromclipboard: Insert Block from Clipboard
+  move: Move
+  msg404: 'Cannot add: Block with ID [{0}] not found'
+  msgcopy: Copy Successful
+  msgdelconfirm:
+  - Delete bookmark item {0}?
+  - ⚠️ Cannot be recovered after deletion! Are you sure you want to delete?
+  msgexist: 'Cannot add: Block with ID [{0}] already exists in the bookmark group'
+  msgparse: Unable to parse block from [{0}]
+  refresh: Refresh
+  rename: Rename Bookmark Group
+  top: Move to Top
+  up: Move Up
+item:
+  bottom: Move to Bottom
+  checkerritem: Check detail
+  copyitem: Copy to
+  copylink: Copy as Link
+  copyref: Copy as Reference
+  del: Delete Bookmark
+  move: Move
+  msgcopy: Copy Successful
+  style: Style
+  top: Move to Top
+  transfer: Move to
+itemErr:
+  closed: The notebook "{0}" is already closed
+  deleted: 'Content block not found, it may have been deleted! Old block content:
+    [{0}]'
 msg:
-  ruleFailed: 'Failed to correctly parse the configuration rule: {0}'
-  ruleInvalid: 'The format of the group rule input is incorrect: {0}'
+  groupNameEmpty: The name of the bookmark group cannot be empty!
   itemHasInGroup: The item is already in the target group
   itemNotFoundInGroup: The item was not found in the source group
-  groupNameEmpty: The name of the bookmark group cannot be empty!
-itemErr:
-  closed: 'The notebook "{0}" is already closed'
-  deleted: 'Content block not found, it may have been deleted! Old block content: [{0}]'
+  ruleFailed: 'Failed to correctly parse the configuration rule: {0}'
+  ruleInvalid: 'The format of the group rule input is incorrect: {0}'
+newgroup:
+  choosetemplate: Template
+  desc:
+    attr: Please enter the attribute to search for; You can fill in [attribute name],
+      or [attribute name][= or like][attribute value]
+    backlinks: Please enter the block ID of the backlink
+    sql: Please enter the SQL query below
+  icondesc: Select the icon for the group; if not set, the plugin will assign a default
+    icon based on the group type.
+  icontitle: Group Icon
+  name:
+  - Bookmark Group Name
+  - Please enter the name of the new bookmark group
+  postprocess:
+    ariaLabel: '<b>First child of container: </b>Display the full container block
+      when the referenced block is the first child of a list item or quote block.<br/><b>Display
+      as document block: </b>Display the document containing the referenced block,
+      rather than the referenced block itself.<br/><b>See README for details</b>'
+    b2doc: Display as document block
+    fb2p: First child of container
+    name: Post-process
+    omit: No Process
+  rinput: Rule Value
+  rtype:
+  - Rule Type
+  - Select Dynamic Rule Type
+  type:
+  - Bookmark Group Type
+  - Select Bookmark Group Type
+ruletype:
+  attr: Block Attributes
+  backlinks: Backlinks
+  js: Javascript
+  sql: SQL
+selecticon:
+  h3: Please select an icon
+  reset: Reset
+  title: Change Group Icon
 setting:
-  replaceDefault:
-    title: Replace Built-in Bookmarks
-    description: 'If enabled, the default bookmarks will be blocked, and bookmark shortcut keys (default is Alt+3) will be bound;<br/>Takes effect after restart; Notice: not appliable in mobile devices!'
-  viewMode:
-    title: Display Mode
-    description: Select the style of the bookmark bar display
-  hideClosed:
-    title: Hide Closed Items
-    description: When enabled, hide items from closed notebooks
-  hideDeleted:
-    title: Hide Invalid Items
-    description: When enabled, hide items that have been deleted
-  grouplist:
-    title: Bookmark Groups
-    description: Set up bookmark groups
-  autoRefreshOnExpand:
-    title: Auto Refresh on Expand
-    description: Automatically refreshes the items within a dynamic group when it is expanded from a collapsed state.
   ariaLabel:
+    description: Display full title of the bookmark item in a hover box when the mouse
+      hovers
     title: Display Hover Box
-    description: Display full title of the bookmark item in a hover box when the mouse hovers
+  autoRefreshOnExpand:
+    description: Automatically refreshes the items within a dynamic group when it
+      is expanded from a collapsed state.
+    title: Auto Refresh on Expand
+  grouplist:
+    description: Set up bookmark groups
+    title: Bookmark Groups
+  hideClosed:
+    description: When enabled, hide items from closed notebooks
+    title: Hide Closed Items
+  hideDeleted:
+    description: When enabled, hide items that have been deleted
+    title: Hide Invalid Items
+  replaceDefault:
+    description: 'If enabled, the default bookmarks will be blocked, and bookmark
+      shortcut keys (default is Alt+3) will be bound;<br/>Takes effect after restart;
+      Notice: not appliable in mobile devices!'
+    title: Replace Built-in Bookmarks
+  viewMode:
+    description: Select the style of the bookmark bar display
+    title: Display Mode
+  zoomInWhenClick:
+    description: When clicking on the bookmark item and opening the content block
+      in the tab, automatically enter the focus mode
+    title: Enter focus mode after jumping to the block
+template:
+  attr:
+    dailynote: Daily Note
+  sql:
+    random: Random Roam
+    thisday: On this day
+    todo: Unsolved Task
+    updated: Recently Updated
 viewMode:
   bookmark: Bookmark Style
   card: Card Style
-bookmark:
-  new: Create New Bookmark Group
-  delete:
-    title: Delete the bookmark group {0}[{1}]?
-    desc: ⚠️ Cannot be recovered after deletion! Are you sure you want to delete?
-  cache: Cache Current Bookmarks
-  logo:
-    name: Bookmark
-    setting: Settings
-    add: Add Bookmark Group
-    refresh: Refresh
-    expand: Expand Ctrl+↓
-    collapse: Collapse Ctrl+↑
-    min: Minimize Ctrl+W
-group:
-  msgexist: 'Cannot add: Block with ID [{0}] already exists in the bookmark group'
-  msg404: 'Cannot add: Block with ID [{0}] not found'
-  refresh: Refresh
-  copyref: Copy as Reference List
-  copylink: Copy as Link List
-  msgcopy: Copy Successful
-  docflow: Document Flow
-  rename: Rename Bookmark Group
-  edit: Edit Rule Value
-  delete: Delete Bookmark Group
-  move: Move
-  top: Move to Top
-  up: Move Up
-  down: Move Down
-  bottom: Move to Bottom
-  fromclipboard: Insert Block from Clipboard
-  msgparse: Unable to parse block from [{0}]
-  currentdoc: Add Current Document Block
-  msgdelconfirm:
-    - Delete bookmark item {0}?
-    - ⚠️ Cannot be recovered after deletion! Are you sure you want to delete?
-item:
-  copyref: Copy as Reference
-  copylink: Copy as Link
-  msgcopy: Copy Successful
-  style: Style
-  transfer: Move to
-  move: Move
-  top: Move to Top
-  bottom: Move to Bottom
-  del: Delete Bookmark
-  checkerritem: Check detail
-  copyitem: Copy to
-newgroup:
-  name:
-    - Bookmark Group Name
-    - Please enter the name of the new bookmark group
-  type:
-    - Bookmark Group Type
-    - Select Bookmark Group Type
-  rtype:
-    - Rule Type
-    - Select Dynamic Rule Type
-  rinput: Rule Value
-  desc:
-    sql: Please enter the SQL query below
-    backlinks: Please enter the block ID of the backlink
-    attr: Please enter the attribute to search for; You can fill in [attribute name], or [attribute name][= or like][attribute value]
-  choosetemplate: Template
-  postprocess:
-    ariaLabel: '<b>First child of container: </b>Display the full container block when the referenced block is the first child of a list item or quote block.<br/><b>Display as document block: </b>Display the document containing the referenced block, rather than the referenced block itself.<br/><b>See README for details</b>'
-    name: Post-process
-    omit: No Process
-    fb2p: First child of container
-    b2doc: Display as document block
-  icontitle: Group Icon
-  # icondesc: 可以手动选择分组的图标；如果不设置，插件会根据分组类型分配默认的图标。
-  icondesc: Select the icon for the group; if not set, the plugin will assign a default icon based on the group type.
-
-bookmarktype:
-  normal: 'Normal Bookmark'
-  dynamic: 'Dynamic Bookmark'
-  composed: 'Composite Bookmark'
-ruletype:
-  sql: SQL
-  backlinks: Backlinks
-  attr: Block Attributes
-  js: Javascript
-template:
-  sql:
-    random: Random Roam
-    updated: Recently Updated
-    thisday: On this day
-    todo: Unsolved Task
-  attr:
-    dailynote: Daily Note
-selecticon:
-  title: Change Group Icon
-  h3: Please select an icon
-  reset: Reset

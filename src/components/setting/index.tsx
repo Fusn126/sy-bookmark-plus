@@ -95,6 +95,19 @@ const App = () => {
                 />
             </SettingItemWrap>
             <SettingItemWrap
+                title={i18n_.zoomInWhenClick.title}
+                description={i18n_.zoomInWhenClick.description}
+            >
+                <InputItem
+                    type='checkbox'
+                    key='zoomInWhenClick'
+                    value={configs['zoomInWhenClick']}
+                    changed={(v: boolean) => {
+                        setConfigs('zoomInWhenClick', v);
+                    }}
+                />
+            </SettingItemWrap>
+            <SettingItemWrap
                 title={i18n_.grouplist.title}
                 description={i18n_.grouplist.description}
                 direction="row"

@@ -3,7 +3,7 @@
  * @Author       : frostime
  * @Date         : 2024-06-12 19:48:53
  * @FilePath     : /src/index.ts
- * @LastEditTime : 2024-12-15 20:04:24
+ * @LastEditTime : 2024-12-28 01:30:14
  * @Description  : 
  */
 import {
@@ -26,8 +26,10 @@ import { setI18n } from "@/utils/i18n";
 
 import "@/index.scss";
 import { isMobile } from "./utils";
-import { provide, purge } from "./libs/inject";
+
 import { loadSdk, unloadSdk } from "./sdk";
+
+import { registerPlugin } from "@frostime/siyuan-plugin-kits";
 
 let model: BookmarkDataModel;
 
@@ -67,9 +69,9 @@ export default class PluginBookmarkPlus extends Plugin {
     }
 
     async onload() {
+        //@ts-ignore
+        registerPlugin(this);
         setI18n(this.i18n as I18n);
-        provide<I18n>('i18n', this.i18n as I18n);
-        provide<PluginBookmarkPlus>('plugin', this);
 
         let svgs = Object.values(Svg);
         this.addIcons(svgs.join(''));
@@ -127,7 +129,6 @@ export default class PluginBookmarkPlus extends Plugin {
 
     onunload(): void {
         unloadSdk();
-        purge();
         destroyBookmark();
         bookmarkKeymap.custom = bookmarkKeymap.default;
         // this.commands = this.commands.filter((command) => command.langKey !== 'F-Misc::Bookmark');

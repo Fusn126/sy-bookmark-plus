@@ -3,7 +3,7 @@ import { render } from "solid-js/web";
 import { Menu, openTab, showMessage, openMobileFileById } from "siyuan";
 import { buildItemDetail } from "../libs/dom";
 
-import { itemInfo, setGroups, groupMap, configs } from "../model";
+import { itemInfo, setGroups, groupMap, configs, configRef } from "../model";
 
 import { BookmarkContext, itemMoving, setItemMoving } from "./context";
 
@@ -11,6 +11,7 @@ import { i18n, renderI18n } from "@/utils/i18n";
 import { simpleDialog } from "@/libs/dialog";
 import Typography from "@/libs/components/typography";
 import { getNotebook, isMobile } from "@/utils";
+import { getBlockByID } from "@/api";
 
 interface IProps {
     group: TBookmarkGroupId;
@@ -267,11 +268,20 @@ const Item: Component<IProps> = (props) => {
         if (isMobile()) {
             openMobileFileById(plugin.app, item().id);
         } else {
+            let zoomIn = configRef().zoomInWhenClick;
+            // if (item().type === 'd') {
+            //     zoomIn = false;
+            // } else {
+            //     let block = await getBlockByID(item().id);
+            //     let root_id = block.root_id;
+            //     let protyle = document.querySelector(`.protyle-title[data-node-id="${root_id}"]`);
+            //     if (protyle) zoomIn = false; //如果文档已经打开了，就直接调整不聚焦
+            // }
             openTab({
                 app: plugin.app,
                 doc: {
                     id: item().id,
-                    zoomIn: item().type === 'd' ? false : true,
+                    zoomIn: zoomIn,
                 },
             });
         }

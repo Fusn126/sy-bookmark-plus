@@ -3,12 +3,13 @@
  * @Author       : frostime
  * @Date         : 2024-07-07 14:44:03
  * @FilePath     : /src/model/stores.ts
- * @LastEditTime : 2024-07-15 18:43:34
+ * @LastEditTime : 2024-12-28 01:22:56
  * @Description  : 
  */
 import { createStore } from "solid-js/store";
 
 import { createMemo } from "solid-js";
+import { wrapStoreRef } from "@frostime/solid-signal-ref";
 
 export const [itemInfo, setItemInfo] = createStore<{ [key: BlockId]: IBookmarkItemInfo }>({});
 
@@ -24,6 +25,7 @@ interface IConfig {
     replaceDefault: boolean;
     autoRefreshOnExpand: boolean;
     ariaLabel: boolean;
+    zoomInWhenClick: boolean;
 }
 
 export const [configs, setConfigs] = createStore<IConfig>({
@@ -33,4 +35,6 @@ export const [configs, setConfigs] = createStore<IConfig>({
     replaceDefault: true,
     autoRefreshOnExpand: false,
     ariaLabel: false,
+    zoomInWhenClick: true
 });
+export const configRef = wrapStoreRef(configs, setConfigs);
