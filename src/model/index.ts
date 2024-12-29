@@ -431,7 +431,7 @@ export class BookmarkDataModel {
             })
             setItemInfo(item.id, 'ref', (ref) => ref + 1);
             this.save();
-            this.updateStaticItems(new Set([item.id]));
+            // this.updateStaticItems(new Set([item.id]));
             return true;
         } else {
             return false;
