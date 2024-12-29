@@ -2,12 +2,12 @@ import { unwrap } from "solid-js/store";
 
 import type PluginBookmarkPlus from "@/index";
 
-import { getBlocks, getDocInfos } from "../libs/data";
+import { getBlocks, getDocInfos } from "./data";
 import { rmItem, insertItem, moveItem } from "../libs/op";
 import { showMessage } from "siyuan";
 import { batch } from "solid-js";
 
-import { debounce } from "@frostime/siyuan-plugin-kits";
+import { debounce, PromiseLimitPool } from "@frostime/siyuan-plugin-kits";
 
 import { i18n, renderI18n } from "@/utils/i18n";
 
@@ -244,21 +244,24 @@ export class BookmarkDataModel {
     );
 
     private async updateStaticItems(allIdsSet: Set<BlockId>) {
-        // console.debug('Update all Bookmark items');
-        // //1. 获取 block 的最新内容
-        // let allIds = [];
-        // //一般调用 updateItems 之前会已经调用过 update dynamic group; 如果再次更新就有些冗余了
-        // //不这么做似乎会造成 item 404 的 bug
-        // const staticGroups = groups.filter(g => g.type !== 'dynamic' && g.hidden !== true);
-        // staticGroups.forEach(g => {
-        //     allIds = allIds.concat(g.items.map(it => it.id));
-        // })
-        // let allIdsSet = new Set(allIds);
-        // allIds = Array.from(allIdsSet);
-
         let allIds = Array.from(allIdsSet);
-        //FIX 不确定这里是否会存在块数量大于 64 造成查找不到的问题
-        let blocks = await getBlocks(...allIds);
+        let blocks: Awaited<ReturnType<typeof getBlocks>> = {};
+        const PAGE_SIZE = 128;
+        if (allIds.length <= PAGE_SIZE) {
+            let result = await getBlocks(allIds, PAGE_SIZE);
+            blocks = result;
+        } else {
+            const pool = new PromiseLimitPool(PAGE_SIZE);
+            for (let i = 0; i < allIds.length; i += PAGE_SIZE) {
+                let ids = allIds.slice(i, i + PAGE_SIZE);
+                pool.add(async () => {
+                    let result = await getBlocks(ids, PAGE_SIZE);
+                    blocks = { ...blocks, ...result };
+                    return result;
+                });
+            }
+            await pool.awaitAll();
+        }
 
         //2. 更新文档块的 logo
         let docsItem: DocumentId[] = [];
@@ -428,6 +431,7 @@ export class BookmarkDataModel {
             })
             setItemInfo(item.id, 'ref', (ref) => ref + 1);
             this.save();
+            this.updateStaticItems(new Set([item.id]));
             return true;
         } else {
             return false;
