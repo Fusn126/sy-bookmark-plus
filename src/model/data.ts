@@ -2,8 +2,8 @@
  * Copyright (c) 2024 by frostime. All Rights Reserved.
  * @Author       : frostime
  * @Date         : 2024-06-13 14:09:40
- * @FilePath     : /src/func/bookmarks/libs/data.ts
- * @LastEditTime : 2024-06-20 15:29:04
+ * @FilePath     : /src/model/data.ts
+ * @LastEditTime : 2024-12-29 20:58:27
  * @Description  : 
  */
 import { sql, request } from "@/api";
@@ -20,8 +20,9 @@ export {
  * @param ids 
  * @returns 
  */
-const getBlocks = async (...ids: BlockId[]) => {
-    const fmt = `select * from blocks where id in (${ids.map((b) => `'${b}'`).join(',')})`;
+const getBlocks = async (ids: BlockId[], limit = 64) => {
+    let fmt = `select * from blocks where id in (${ids.map((b) => `'${b}'`).join(',')})`;
+    fmt += `limit ${limit}`;
     let blocks = await sql(fmt);
     let results: { [key: BlockId]: Block | null } = {};
     for (let id of ids) {

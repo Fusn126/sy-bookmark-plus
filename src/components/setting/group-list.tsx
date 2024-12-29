@@ -56,12 +56,13 @@ const App = () => {
 
     return (
         <section
-            class="fn__flex fn__flex-1 fn__flex-column bookmark-config-group-list"
+            class="fn__flex fn__flex-1 bookmark-config-group-list"
             style={{
-                border: '2px solid var(--b3-theme-primary-lighter)',
-                'border-radius': '5px',
-                padding: '15px 10px',
-                gap: '10px'
+                padding: '20px 10px',
+                gap: '10px',
+                display: 'flex',
+                flex: 1,
+                'flex-direction': 'column'
             }}
         >
             <For each={groups}>

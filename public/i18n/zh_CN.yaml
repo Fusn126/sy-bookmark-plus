@@ -30,6 +30,9 @@ setting:
   ariaLabel:
     title: 显示悬浮框
     description: 鼠标悬停在书签项目上时，在悬浮框中显示书签项目的完整标题
+  zoomInWhenClick:
+    title: 跳转到块后进入聚焦
+    description: 当点击书签项目，在标签页中打开内容块的时候，自动进入聚焦模式
 viewMode:
   bookmark: 书签样式
   card: 卡片样式

@@ -1,6 +1,6 @@
 import { createSignal, For, Show } from "solid-js";
 import Icon from "./icon";
-import { inject } from "@/libs/inject";
+// import { inject } from "@/libs/inject";
 import { solidDialog } from "@/libs/dialog";
 
 import { i18n } from "@/utils/i18n";
@@ -20,7 +20,7 @@ const SelectIcons = (props: IProps) => {
     const [activeTab, setActiveTab] = createSignal<'symbols' | 'emojis'>('symbols');
     const symbols = Array.from(document.querySelectorAll('symbol'));
 
-    const i18n = inject<I18n>('i18n');
+    // const i18n = inject<I18n>('i18n');
 
     const ALLOWED_EMOJI_GROUP = ['activity', 'travel', 'people', 'nature', 'food', 'symbols', 'object', 'flags'];
     let EmojisGroups = (window.siyuan.emojis as ImojiGroup[]).filter(emoji => ALLOWED_EMOJI_GROUP.includes(emoji.id));

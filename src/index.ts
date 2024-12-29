@@ -3,7 +3,7 @@
  * @Author       : frostime
  * @Date         : 2024-06-12 19:48:53
  * @FilePath     : /src/index.ts
- * @LastEditTime : 2024-12-15 20:04:24
+ * @LastEditTime : 2024-12-29 20:35:01
  * @Description  : 
  */
 import {
@@ -12,7 +12,7 @@ import {
 
 import { render } from "solid-js/web";
 
-import { simpleDialog } from "./libs/dialog";
+import { solidDialog } from "./libs/dialog";
 
 import { getModel, rmModel, type BookmarkDataModel } from "./model";
 import { configs } from "./model";
@@ -26,8 +26,10 @@ import { setI18n } from "@/utils/i18n";
 
 import "@/index.scss";
 import { isMobile } from "./utils";
-import { provide, purge } from "./libs/inject";
+
 import { loadSdk, unloadSdk } from "./sdk";
+
+import { registerPlugin } from "@frostime/siyuan-plugin-kits";
 
 let model: BookmarkDataModel;
 
@@ -67,9 +69,9 @@ export default class PluginBookmarkPlus extends Plugin {
     }
 
     async onload() {
+        //@ts-ignore
+        registerPlugin(this);
         setI18n(this.i18n as I18n);
-        provide<I18n>('i18n', this.i18n as I18n);
-        provide<PluginBookmarkPlus>('plugin', this);
 
         let svgs = Object.values(Svg);
         this.addIcons(svgs.join(''));
@@ -127,19 +129,15 @@ export default class PluginBookmarkPlus extends Plugin {
 
     onunload(): void {
         unloadSdk();
-        purge();
         destroyBookmark();
         bookmarkKeymap.custom = bookmarkKeymap.default;
         // this.commands = this.commands.filter((command) => command.langKey !== 'F-Misc::Bookmark');
     }
 
     openSetting(): void {
-        let container = document.createElement("div") as HTMLDivElement;
-        container.classList.add("fn__flex-1", "fn__flex");
-        render(() => Setting(), container);
         let size = {
-            width: '700px',
-            height: '700px'
+            width: '900px',
+            height: '600px'
         }
         if (isMobile()) {
             size = {
@@ -147,14 +145,11 @@ export default class PluginBookmarkPlus extends Plugin {
                 height: '90%'
             }
         }
-        simpleDialog({
+        solidDialog({
             title: window.siyuan.languages.config,
-            ele: container,
-            callback: () => {
-                model.save();
-            },
+            loader: () => Setting(),
             ...size
-        })
+        });
     }
 
 }

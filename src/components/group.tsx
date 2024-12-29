@@ -105,7 +105,9 @@ const Group: Component<Props> = (props) => {
 
         if (configs['autoRefreshOnExpand'] && isDynamicGroup() && expand === false) {
             // console.log('auto refresh', props.group.name);
-            model.updateDynamicGroup(props.group);
+            model.updateDynamicGroup(props.group).then(() => {
+                model.updateGroupStaticItemsDebounced(props.group);
+            });
         }
 
         setGroups((g) => g.id === props.group.id, 'expand', expand);
@@ -167,16 +169,17 @@ const Group: Component<Props> = (props) => {
     const showGroupContextMenu = (e: MouseEvent) => {
         e.stopPropagation();
         const menu = new Menu();
-        if (props.group.type === 'dynamic') {
-            menu.addItem({
-                label: i18n_.refresh,
-                icon: 'iconRefresh',
-                click: () => {
-                    model.updateDynamicGroup(props.group);
+        menu.addItem({
+            label: i18n_.refresh,
+            icon: 'iconRefresh',
+            click: async () => {
+                if (props.group.type === 'dynamic') {
+                    await model.updateDynamicGroup(props.group);
                 }
-            });
-            menu.addSeparator();
-        }
+                await model.updateGroupStaticItemsDebounced(props.group);
+            }
+        });
+        menu.addSeparator();
         menu.addItem({
             label: i18n_.copyref,
             icon: "iconRef",
@@ -498,7 +501,9 @@ const Group: Component<Props> = (props) => {
                         class="b3-list-item__action"
                         onClick={(e) => {
                             e.stopPropagation();
-                            model.updateDynamicGroup(props.group);
+                            model.updateDynamicGroup(props.group).then(() => {
+                                model.updateGroupStaticItemsDebounced(props.group);
+                            });
                         }}
                     >
                         <svg>

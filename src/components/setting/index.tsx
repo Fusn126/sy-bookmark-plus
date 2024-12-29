@@ -1,108 +1,162 @@
-import { FormWrap as SettingItemWrap, FormInput as InputItem } from '@/libs/components/Form';
+import Form from "@/libs/components/Form";
 import GroupList from './group-list';
 import { configs, setConfigs } from "@/model";
 
 import { i18n } from "@/utils/i18n";
+import { children, Component, For, JSXElement } from "solid-js";
+import { useSignalRef } from "@frostime/solid-signal-ref";
+import { Dynamic } from "solid-js/web";
+
+interface SettingPanelProps {
+    group: string;
+    settingItems?: ISettingItem[];
+    // display: boolean;
+    onChanged?: (e: { group: string, key: string, value: any }) => void;
+    children?: JSXElement
+}
+
+const SettingPanel: Component<SettingPanelProps> = (props) => {
+    // const fn__none = createMemo(() => props.display === true ? "" : "fn__none");
+    const useChildren = children(() => props.children);
+
+    return (
+        <div class={`config__tab-container`} data-name={props.group}>
+            <For each={props.settingItems ?? []}>
+                {(item) => (
+                    <Form.Wrap
+                        title={item.title}
+                        description={item.description}
+                        direction={item?.direction}
+                    >
+                        <Form.Input
+                            type={item.type}
+                            key={item.key}
+                            value={item.value}
+                            placeholder={item?.placeholder}
+                            options={item?.options}
+                            slider={item?.slider}
+                            button={item?.button}
+                            changed={(v) => props.onChanged({ group: props.group, key: item.key, value: v })}
+                        />
+                    </Form.Wrap>
+                )}
+            </For>
+            {useChildren()}
+        </div>
+    );
+};
 
 const App = () => {
     const i18n_ = i18n.setting;
 
+    const focused = useSignalRef(0);
+
+    const PanelBasic = () => {
+        const settingItems: ISettingItem[] = [
+            {
+                key: 'replaceDefault',
+                type: 'checkbox',
+                title: i18n_.replaceDefault.title,
+                description: i18n_.replaceDefault.description,
+                value: configs['replaceDefault']
+            },
+            {
+                key: 'viewMode',
+                type: 'select',
+                title: i18n_.viewMode.title,
+                description: i18n_.viewMode.description,
+                value: configs['viewMode'],
+                options: {
+                    'bookmark': i18n.viewMode.bookmark,
+                    'card': i18n.viewMode.card
+                }
+            },
+            {
+                key: 'autoRefreshOnExpand',
+                type: 'checkbox',
+                title: i18n_.autoRefreshOnExpand.title,
+                description: i18n_.autoRefreshOnExpand.title,
+                value: configs['autoRefreshOnExpand']
+            },
+            {
+                key: 'hideClosed',
+                type: 'checkbox',
+                title: i18n_.hideClosed.title,
+                description: i18n_.hideClosed.description,
+                value: configs['hideClosed']
+            },
+            {
+                key: 'hideDeleted',
+                type: 'checkbox',
+                title: i18n_.hideDeleted.title,
+                description: i18n_.hideDeleted.description,
+                value: configs['hideDeleted']
+            },
+            {
+                key: 'ariaLabel',
+                type: 'checkbox',
+                title: i18n_.ariaLabel.title,
+                description: i18n_.ariaLabel.description,
+                value: configs['ariaLabel']
+            },
+            {
+                key: 'zoomInWhenClick',
+                type: 'checkbox',
+                title: i18n_.zoomInWhenClick.title,
+                description: i18n_.zoomInWhenClick.description,
+                value: configs['zoomInWhenClick']
+            }
+        ];
+
+        return (
+            <SettingPanel
+                group="Basic"
+                settingItems={settingItems}
+                onChanged={({ key, value }) => {
+                    //@ts-ignore
+                    setConfigs(key, value);
+                }}
+            />
+        );
+    }
+
+    const PanelGroupList = () => {
+        return (
+            <SettingPanel
+                group="GroupList"
+            >
+                <GroupList />
+            </SettingPanel>
+        );
+    }
+
+    const groups = {
+        'Basic': PanelBasic,
+        'GroupList': PanelGroupList
+    }
+
+
     return (
-        <div class="fn__flex-1" style={{
-            'font-size': '1rem',
-            padding: '10px 20px'
-        }}>
-            <SettingItemWrap
-                title={i18n_.replaceDefault.title}
-                description={i18n_.replaceDefault.description}
-            >
-                <InputItem
-                    type="checkbox"
-                    key="replaceDefault"
-                    value={configs['replaceDefault']}
-                    changed={(v) => {
-                        setConfigs('replaceDefault', v);
-                    }}
-                />
-            </SettingItemWrap>
-            <SettingItemWrap
-                title={i18n_.viewMode.title}
-                description={i18n_.viewMode.description}
-            >
-                <InputItem
-                    type='select'
-                    key='viewMode'
-                    value={configs['viewMode']}
-                    changed={(v: any) => {
-                        setConfigs('viewMode', v);
-                    }}
-                    options={{
-                        'bookmark': i18n.viewMode.bookmark,
-                        'card': i18n.viewMode.card
-                    }}
-                />
-            </SettingItemWrap>
-            <SettingItemWrap
-                title={i18n_.autoRefreshOnExpand.title}
-                description={i18n_.autoRefreshOnExpand.title}
-            >
-                <InputItem
-                    type='checkbox'
-                    key='autoRefreshOnExpand'
-                    value={configs['autoRefreshOnExpand']}
-                    changed={(v: any) => {
-                        setConfigs('autoRefreshOnExpand', v);
-                    }}
-                />
-            </SettingItemWrap>
-            <SettingItemWrap
-                title={i18n_.hideClosed.title}
-                description={i18n_.hideClosed.description}
-            >
-                <InputItem
-                    type='checkbox'
-                    key='hideClosed'
-                    value={configs['hideClosed']}
-                    changed={(v: any) => {
-                        setConfigs('hideClosed', v);
-                    }}
-                />
-            </SettingItemWrap>
-            <SettingItemWrap
-                title={i18n_.hideDeleted.title}
-                description={i18n_.hideDeleted.description}
-            >
-                <InputItem
-                    type='checkbox'
-                    key='hideDeleted'
-                    value={configs['hideDeleted']}
-                    changed={(v: any) => {
-                        setConfigs('hideDeleted', v);
-                    }}
-                />
-            </SettingItemWrap>
-            <SettingItemWrap
-                title={i18n_.ariaLabel.title}
-                description={i18n_.ariaLabel.description}
-            >
-                <InputItem
-                    type='checkbox'
-                    key='ariaLabel'
-                    value={configs['ariaLabel']}
-                    changed={(v: any) => {
-                        setConfigs('ariaLabel', v);
-                    }}
-                />
-            </SettingItemWrap>
-            <SettingItemWrap
-                title={i18n_.grouplist.title}
-                description={i18n_.grouplist.description}
-                direction="row"
-            >
-                <GroupList/>
-            </SettingItemWrap>
+        <div class="fn__flex-1 fn__flex config__panel" style={{ height: "100%" }}>
+            <ul class="b3-tab-bar b3-list b3-list--background">
+                <For each={Object.keys(groups)}>
+                    {(group, i) => (
+                        <li
+                            class={`b3-list-item${i() === focused() ? " b3-list-item--focus" : ""}`}
+                            onClick={() => focused(i())}
+                            onKeyDown={() => { }}
+                            style={{ 'padding-left': "1rem" }}
+                        >
+                            <span class="b3-list-item__text">{group}</span>
+                        </li>
+                    )}
+                </For>
+            </ul>
+            <div class="config__tab-wrap">
+                <Dynamic component={groups[Object.keys(groups)[focused()]]} />
+            </div>
         </div>
-    )
-}
+    );
+};
 
 export default App;

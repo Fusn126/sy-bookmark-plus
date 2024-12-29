@@ -39,6 +39,10 @@ interface I18n {
             title: string;
             description: string;
         };
+        zoomInWhenClick: {
+            title: string;
+            description: string;
+        };
     };
     viewMode: {
         bookmark: string;
@@ -125,6 +129,7 @@ interface I18n {
         sql: string;
         backlinks: string;
         attr: string;
+        js: string;
     };
     template: {
         sql: {
