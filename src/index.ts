@@ -3,7 +3,7 @@
  * @Author       : frostime
  * @Date         : 2024-06-12 19:48:53
  * @FilePath     : /src/index.ts
- * @LastEditTime : 2024-12-28 01:30:14
+ * @LastEditTime : 2024-12-29 20:35:01
  * @Description  : 
  */
 import {
@@ -12,7 +12,7 @@ import {
 
 import { render } from "solid-js/web";
 
-import { simpleDialog } from "./libs/dialog";
+import { solidDialog } from "./libs/dialog";
 
 import { getModel, rmModel, type BookmarkDataModel } from "./model";
 import { configs } from "./model";
@@ -135,12 +135,9 @@ export default class PluginBookmarkPlus extends Plugin {
     }
 
     openSetting(): void {
-        let container = document.createElement("div") as HTMLDivElement;
-        container.classList.add("fn__flex-1", "fn__flex");
-        render(() => Setting(), container);
         let size = {
-            width: '700px',
-            height: '700px'
+            width: '900px',
+            height: '600px'
         }
         if (isMobile()) {
             size = {
@@ -148,14 +145,11 @@ export default class PluginBookmarkPlus extends Plugin {
                 height: '90%'
             }
         }
-        simpleDialog({
+        solidDialog({
             title: window.siyuan.languages.config,
-            ele: container,
-            callback: () => {
-                model.save();
-            },
+            loader: () => Setting(),
             ...size
-        })
+        });
     }
 
 }

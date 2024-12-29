@@ -3,28 +3,14 @@
  * @Author       : frostime
  * @Date         : 2024-03-23 21:37:33
  * @FilePath     : /src/libs/dialog.ts
- * @LastEditTime : 2024-10-03 16:44:41
+ * @LastEditTime : 2024-12-29 20:30:34
  * @Description  : 对话框相关工具
  */
 import { Dialog } from "siyuan";
 import { JSXElement } from "solid-js";
 import { render } from "solid-js/web";
 
-export const simpleDialog = (args: {
-    title: string, ele: HTMLElement | DocumentFragment,
-    width?: string, height?: string,
-    callback?: () => void;
-}) => {
-    const dialog = new Dialog({
-        title: args.title,
-        content: `<div class="fn__flex fn__flex dialog-content"/>`,
-        width: args.width,
-        height: args.height,
-        destroyCallback: args.callback
-    });
-    dialog.element.querySelector(".dialog-content").appendChild(args.ele);
-    return dialog;
-}
+import { simpleDialog } from "@frostime/siyuan-plugin-kits";
 
 export const solidDialog = (args: {
     title: string, loader: () => JSXElement,
@@ -34,13 +20,13 @@ export const solidDialog = (args: {
     let container = document.createElement('div')
     container.style.display = 'contents';
     let disposer = render(args.loader, container);
-    const dialog = simpleDialog({...args, ele: container, callback: () => {
+    const {dialog, close} = simpleDialog({...args, ele: container, callback: () => {
         disposer();
         if (args.callback) args.callback();;
     }});
     return {
         dialog,
-        close: () => dialog.destroy(),
+        close,
         container
     }
 }

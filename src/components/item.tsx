@@ -8,7 +8,8 @@ import { itemInfo, setGroups, groupMap, configs, configRef } from "../model";
 import { BookmarkContext, itemMoving, setItemMoving } from "./context";
 
 import { i18n, renderI18n } from "@/utils/i18n";
-import { simpleDialog } from "@/libs/dialog";
+// import { simpleDialog } from "@/libs/dialog";
+import { simpleDialog } from "@frostime/siyuan-plugin-kits";
 import Typography from "@/libs/components/typography";
 import { getNotebook, isMobile } from "@/utils";
 import { getBlockByID } from "@/api";
