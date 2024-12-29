@@ -7,7 +7,7 @@ import { rmItem, insertItem, moveItem } from "../libs/op";
 import { showMessage } from "siyuan";
 import { batch } from "solid-js";
 
-import { debounce } from '@/utils';
+import { debounce } from "@frostime/siyuan-plugin-kits";
 
 import { i18n, renderI18n } from "@/utils/i18n";
 
@@ -98,7 +98,8 @@ export class BookmarkDataModel {
         await this.plugin.saveData(StorageFileItemSnapshot, itemInfo);
     }
 
-    save = debounce(this.saveCore.bind(this), 1000);
+    // save = debounce(this.saveCore.bind(this), 1000);
+    save = debounce(this.saveCore.bind(this) as typeof this.saveCore, 1000);
 
     setGroups(gid: TBookmarkGroupId, key: keyof IBookmarkGroup, value: IBookmarkGroup[keyof IBookmarkGroup]) {
         setGroups((gs) => gs.id === gid, key, value);
@@ -131,12 +132,21 @@ export class BookmarkDataModel {
                 toUpdated.push(this.updateDynamicGroup(group));
             }
         });
+        // 由于是 async 的，所以很遗憾没法使用 batch 更新
         await Promise.all(toUpdated);
-        await this.updateStaticItems();
+        // await this.updateStaticItems();
+        let groupsToUpdate = groups.filter(g => g.hidden !== true);
+        let allIdsSet = new Set<BlockId>();
+        groupsToUpdate.forEach(group => {
+            group.items.forEach(item => {
+                allIdsSet.add(item.id);
+            });
+        });
+        await this.updateStaticItems(allIdsSet);
     }
 
     /**
-     * 查询动态规则中的块
+     * 查询动态规则中的块, 只查询，不更改已有的 item 的信息
      * @param group
      * @returns
      */
@@ -219,19 +229,35 @@ export class BookmarkDataModel {
 
     }
 
-    async updateStaticItems() {
-        console.debug('Update all Bookmark items');
-        //1. 获取 block 的最新内容
-        let allIds = [];
-        //一般调用 updateItems 之前会已经调用过 update dynamic group; 如果再次更新就有些冗余了
-        //不这么做似乎会造成 item 404 的 bug
-        const staticGroups = groups.filter(g => g.type !== 'dynamic' && g.hidden !== true);
-        staticGroups.forEach(g => {
-            allIds = allIds.concat(g.items.map(it => it.id));
-        })
-        let allIdsSet = new Set(allIds);
-        allIds = Array.from(allIdsSet);
+    async updateGroupStaticItems(group: IBookmarkGroup) {
+        let allIdsSet = new Set<BlockId>();
+        group.items.forEach(item => {
+            allIdsSet.add(item.id);
+        });
+        await this.updateStaticItems(allIdsSet);
+    }
 
+    // updateGroupStaticItemsDebounced = debounce(this.updateGroupStaticItems.bind(this), 1000);
+    updateGroupStaticItemsDebounced = debounce(
+        this.updateGroupStaticItems.bind(this) as typeof this.updateGroupStaticItems,
+        1000
+    );
+
+    private async updateStaticItems(allIdsSet: Set<BlockId>) {
+        // console.debug('Update all Bookmark items');
+        // //1. 获取 block 的最新内容
+        // let allIds = [];
+        // //一般调用 updateItems 之前会已经调用过 update dynamic group; 如果再次更新就有些冗余了
+        // //不这么做似乎会造成 item 404 的 bug
+        // const staticGroups = groups.filter(g => g.type !== 'dynamic' && g.hidden !== true);
+        // staticGroups.forEach(g => {
+        //     allIds = allIds.concat(g.items.map(it => it.id));
+        // })
+        // let allIdsSet = new Set(allIds);
+        // allIds = Array.from(allIdsSet);
+
+        let allIds = Array.from(allIdsSet);
+        //FIX 不确定这里是否会存在块数量大于 64 造成查找不到的问题
         let blocks = await getBlocks(...allIds);
 
         //2. 更新文档块的 logo
@@ -300,7 +326,7 @@ export class BookmarkDataModel {
             }
             // ItemInfoStore[id].set({ ...item });
         });
-        console.debug('更新所有 Bookmark items 完成');
+        // console.debug('更新所有 Bookmark items 完成');
 
         //batch 更新
         batch(() => {

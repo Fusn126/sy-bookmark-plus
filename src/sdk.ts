@@ -1,3 +1,11 @@
+/*
+ * Copyright (c) 2024 by frostime. All Rights Reserved.
+ * @Author       : frostime
+ * @Date         : 2024-12-15 23:01:47
+ * @FilePath     : /src/sdk.ts
+ * @LastEditTime : 2024-12-28 12:48:12
+ * @Description  : 
+ */
 // import type PluginBookmarkPlus from ".";
 import { groups, itemInfo } from "./model/stores";
 // import { getModel } from "./model";
@@ -14,6 +22,9 @@ export const loadSdk = () => {
                 hidden: group.hidden,
                 type: group.type,
             }));
+        },
+        findGroup: (name: string) => {
+            return groups.find(group => group.name === name);
         },
         listItems: (groupId: string) => {
             if (!groupId || typeof groupId !== 'string') {
