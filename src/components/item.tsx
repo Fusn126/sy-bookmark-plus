@@ -270,14 +270,9 @@ const Item: Component<IProps> = (props) => {
             openMobileFileById(plugin.app, item().id);
         } else {
             let zoomIn = configRef().zoomInWhenClick;
-            // if (item().type === 'd') {
-            //     zoomIn = false;
-            // } else {
-            //     let block = await getBlockByID(item().id);
-            //     let root_id = block.root_id;
-            //     let protyle = document.querySelector(`.protyle-title[data-node-id="${root_id}"]`);
-            //     if (protyle) zoomIn = false; //如果文档已经打开了，就直接调整不聚焦
-            // }
+            if (item().type === 'd') {
+                zoomIn = false;
+            }
             openTab({
                 app: plugin.app,
                 doc: {
