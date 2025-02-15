@@ -64,7 +64,7 @@ const BookmarkComponent: Component<Props> = (props) => {
 
     const groupAdd = () => {
         createNewGroup((result: { group: any, rule: any, icon?: IBookmarkGroup['icon'] }) => {
-            console.log(result);
+            // console.log(result);
             let { group, rule, icon } = result;
             if (group.name === "") {
                 showMessage(i18n.msg.groupNameEmpty, 3000, 'error');

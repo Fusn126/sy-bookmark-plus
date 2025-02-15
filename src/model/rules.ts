@@ -3,7 +3,7 @@
  * @Author       : Yp Z
  * @Date         : 2023-07-29 15:17:15
  * @FilePath     : /src/model/rules.ts
- * @LastEditTime : 2025-02-15 23:01:55
+ * @LastEditTime : 2025-02-15 23:43:07
  * @Description  : 
  */
 import * as api from "@/api";
@@ -273,7 +273,7 @@ class JSQuery extends MatchRule {
         try {
             let func = new Function('kit', 'fetchPost', code);
             let data = await func(kit, fetchPost);
-            console.debug('JS result:', data);
+            // console.debug('JS result:', data);
             if (Array.isArray(data) && data?.length > 0) {
                 if (typeof data[0] === 'string') {
                     if (matchIDFormat(data[0])) {

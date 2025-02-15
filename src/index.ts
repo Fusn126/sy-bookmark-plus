@@ -3,7 +3,7 @@
  * @Author       : frostime
  * @Date         : 2024-06-12 19:48:53
  * @FilePath     : /src/index.ts
- * @LastEditTime : 2025-02-15 22:47:51
+ * @LastEditTime : 2025-02-15 23:58:28
  * @Description  : 
  */
 import {
@@ -14,7 +14,7 @@ import { render } from "solid-js/web";
 
 import { solidDialog } from "./libs/dialog";
 
-import { configRef, getModel, rmModel, type BookmarkDataModel } from "./model";
+import { configRef, getModel, rmModel, saveConfig, type BookmarkDataModel } from "./model";
 import { configs } from "./model";
 
 import Bookmark from "./components/bookmark";
@@ -179,6 +179,10 @@ export default class PluginBookmarkPlus extends Plugin {
         solidDialog({
             title: window.siyuan.languages.config,
             loader: () => Setting(),
+            callback: async () => {
+                await saveConfig();
+                await model.save();
+            },
             ...size
         });
     }

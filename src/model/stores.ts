@@ -3,10 +3,10 @@
  * @Author       : frostime
  * @Date         : 2024-07-07 14:44:03
  * @FilePath     : /src/model/stores.ts
- * @LastEditTime : 2025-02-15 22:41:37
+ * @LastEditTime : 2025-02-16 00:05:34
  * @Description  : 
  */
-import { createStore } from "solid-js/store";
+import { createStore, unwrap } from "solid-js/store";
 
 import { createMemo } from "solid-js";
 import { wrapStoreRef } from "@frostime/solid-signal-ref";
@@ -15,9 +15,29 @@ import { debounce, thisPlugin } from "@frostime/siyuan-plugin-kits";
 export const [itemInfo, setItemInfo] = createStore<{ [key: BlockId]: IBookmarkItemInfo }>({});
 
 export const [groups, setGroups] = createStore<IBookmarkGroup[]>([]);
-export const groupMap = createMemo<Map<TBookmarkGroupId, IBookmarkGroup & {index: number}>>(() => {
-    return new Map(groups.map((group, index) => [group.id, {...group, index: index}]));
+export const groupMap = createMemo<Map<TBookmarkGroupId, IBookmarkGroup & { index: number }>>(() => {
+    return new Map(groups.map((group, index) => [group.id, { ...group, index: index }]));
 });
+
+const StorageNameBookmarks = 'bookmarks';  //书签
+const _saveGroupMap = async (fpath?: string) => {
+    let result: { [key: TBookmarkGroupId]: IBookmarkGroup } = {};
+
+    for (let [id, group] of groupMap()) {
+        result[id] = unwrap(group);
+        let items = unwrap(result[id].items);
+        if (group.type === 'dynamic') {
+            //如果是动态规则，就只保存一部分自定义过的 item
+            items = items.filter(item => item.style);
+        }
+        result[id].items = items;
+    }
+    fpath = fpath ?? StorageNameBookmarks + '.json';
+    await thisPlugin().saveData(fpath, result);
+    return result;
+}
+export const saveGroupMap = debounce(_saveGroupMap, 1000);
+
 
 interface IConfig {
     hideClosed: boolean;
@@ -41,6 +61,7 @@ export const [configs, setConfigs] = createStore<IConfig>({
     autoRefreshTemplatingRuleOnSwitchProtyle: false
 });
 export const configRef = wrapStoreRef(configs, setConfigs);
+
 
 const StorageFileConfigs = 'bookmark-configs.json';  //书签插件相关的配置
 const _saveConfig = async () => {
