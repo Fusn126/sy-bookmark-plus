@@ -1,6 +1,6 @@
 import Form from "@/libs/components/Form";
 import GroupList from './group-list';
-import { configs, setConfigs } from "@/model";
+import { configs, saveConfig, setConfigs } from "@/model";
 
 import { i18n } from "@/utils/i18n";
 import { children, Component, For, JSXElement } from "solid-js";
@@ -115,6 +115,7 @@ const App = () => {
                 onChanged={({ key, value }) => {
                     //@ts-ignore
                     setConfigs(key, value);
+                    saveConfig();
                 }}
             />
         );

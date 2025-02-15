@@ -3,11 +3,13 @@
  * @Author       : Yp Z
  * @Date         : 2023-07-29 15:17:15
  * @FilePath     : /src/model/rules.ts
- * @LastEditTime : 2024-12-15 19:48:53
+ * @LastEditTime : 2025-02-15 19:48:14
  * @Description  : 
  */
 import * as api from "@/api";
-import { fb2p, getBlocksByIDs } from "@/libs/query";
+import { fb2p } from "@/libs/query";
+
+import { id2block } from "@frostime/siyuan-plugin-kits";
 
 import { Caret } from "@/utils/const";
 import { renderTemplate, VAR_NAMES } from "./templating";
@@ -114,7 +116,7 @@ export class Backlinks extends MatchRule {
         else if (this.process === 'b2doc') {
             let docIds = blocks.map(b => b.root_id);
             docIds = Array.from(new Set(docIds));
-            let docs = await getBlocksByIDs(...docIds);
+            let docs = await id2block(docIds) as Block[];
             return docs;
         }
         else if (this.process === 'fb2p') {
@@ -274,7 +276,7 @@ class JSQuery extends MatchRule {
             if (Array.isArray(data) && data?.length > 0) {
                 if (typeof data[0] === 'string') {
                     if (matchIDFormat(data[0])) {
-                        result = await getBlocksByIDs(...data);
+                        result = await id2block(data) as Block[];
                     } else {
                         showMessage(((`JS 查询返回结果必须是块/块ID的列表!`)), 3000, 'error');
                     }

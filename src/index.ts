@@ -3,7 +3,7 @@
  * @Author       : frostime
  * @Date         : 2024-06-12 19:48:53
  * @FilePath     : /src/index.ts
- * @LastEditTime : 2024-12-29 20:35:01
+ * @LastEditTime : 2025-02-15 19:26:49
  * @Description  : 
  */
 import {
@@ -115,7 +115,8 @@ export default class PluginBookmarkPlus extends Plugin {
         }
         `);
         bookmarkKeymap.custom = '';
-        console.log('bookmarkKeymap', bookmarkKeymap);
+        console.debug(`Replace SiYuan default bookmark`, bookmarkKeymap);
+
         this.addCommand({
             langKey: 'F-Misc::Bookmark',
             langText: 'F-misc Bookmark',

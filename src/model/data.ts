@@ -3,11 +3,13 @@
  * @Author       : frostime
  * @Date         : 2024-06-13 14:09:40
  * @FilePath     : /src/model/data.ts
- * @LastEditTime : 2024-12-29 20:58:27
+ * @LastEditTime : 2025-02-15 19:14:51
  * @Description  : 
  */
 import { sql, request } from "@/api";
-import PromiseLimitPool from "@/libs/promise-pool";
+// import PromiseLimitPool from "@/libs/promise-pool";
+import { PromiseLimitPool } from "@frostime/siyuan-plugin-kits";
+
 
 export {
     getBlocks,
