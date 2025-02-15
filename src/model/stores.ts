@@ -3,7 +3,7 @@
  * @Author       : frostime
  * @Date         : 2024-07-07 14:44:03
  * @FilePath     : /src/model/stores.ts
- * @LastEditTime : 2025-02-15 19:36:13
+ * @LastEditTime : 2025-02-15 22:41:37
  * @Description  : 
  */
 import { createStore } from "solid-js/store";
@@ -27,6 +27,7 @@ interface IConfig {
     autoRefreshOnExpand: boolean;
     ariaLabel: boolean;
     zoomInWhenClick: boolean;
+    autoRefreshTemplatingRuleOnSwitchProtyle: boolean;
 }
 
 export const [configs, setConfigs] = createStore<IConfig>({
@@ -36,7 +37,8 @@ export const [configs, setConfigs] = createStore<IConfig>({
     replaceDefault: true,
     autoRefreshOnExpand: false,
     ariaLabel: false,
-    zoomInWhenClick: true
+    zoomInWhenClick: true,
+    autoRefreshTemplatingRuleOnSwitchProtyle: false
 });
 export const configRef = wrapStoreRef(configs, setConfigs);
 

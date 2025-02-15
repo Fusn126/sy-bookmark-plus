@@ -278,7 +278,7 @@ class JSQuery extends MatchRule {
                     if (matchIDFormat(data[0])) {
                         result = await id2block(data) as Block[];
                     } else {
-                        showMessage(((`JS 查询返回结果必须是块/块ID的列表!`)), 3000, 'error');
+                        showMessage(i18n.src_model_rulests.js_query_result, 3000, 'error');
                     }
                 } else {
                     result = data;

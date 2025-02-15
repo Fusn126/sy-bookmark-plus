@@ -3,7 +3,7 @@
  * @Author       : frostime
  * @Date         : 2024-06-12 19:48:53
  * @FilePath     : /src/index.ts
- * @LastEditTime : 2025-02-15 20:11:28
+ * @LastEditTime : 2025-02-15 22:47:51
  * @Description  : 
  */
 import {
@@ -14,7 +14,7 @@ import { render } from "solid-js/web";
 
 import { solidDialog } from "./libs/dialog";
 
-import { getModel, rmModel, type BookmarkDataModel } from "./model";
+import { configRef, getModel, rmModel, type BookmarkDataModel } from "./model";
 import { configs } from "./model";
 
 import Bookmark from "./components/bookmark";
@@ -30,6 +30,7 @@ import { isMobile } from "./utils";
 import { loadSdk, unloadSdk } from "./sdk";
 
 import { registerPlugin } from "@frostime/siyuan-plugin-kits";
+import { enableAutoRefresh } from "./model/auto-refresh";
 
 let model: BookmarkDataModel;
 
@@ -139,6 +140,9 @@ export default class PluginBookmarkPlus extends Plugin {
 
         // useSdk(this);
         loadSdk();
+        if (configRef().autoRefreshTemplatingRuleOnSwitchProtyle) {
+            enableAutoRefresh();
+        }
     }
 
     private replaceDefaultBookmark() {

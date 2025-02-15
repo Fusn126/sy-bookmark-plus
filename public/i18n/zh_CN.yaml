@@ -1,131 +1,138 @@
----
+bookmark:
+  cache: 缓存当前书签
+  delete:
+    desc: ⚠️ 删除后无法恢复！确定删除吗？
+    title: 是否删除书签组{0}[{1}]?
+  logo:
+    add: 添加书签组
+    collapse: 折叠 Ctrl+↑
+    expand: 展开 Ctrl+↓
+    min: 最小化 Ctrl+W
+    name: 书签
+    refresh: 刷新
+    setting: 设置
+  new: 新建书签组
+bookmarktype:
+  composed: 复合书签
+  dynamic: 动态书签
+  normal: 普通书签
+group:
+  bottom: 置底
+  copylink: 复制为链接列表
+  copyref: 复制为引用列表
+  currentdoc: 添加当前文档块
+  delete: 删除书签组
+  docflow: 文档流
+  down: 下移
+  edit: 更改规则值
+  fromclipboard: 从剪贴板中插入块
+  move: 移动
+  msg404: '无法添加: 未找到 ID 为 [{0}] 的块'
+  msgcopy: 复制成功
+  msgdelconfirm:
+  - 是否删除书签项目{0}?
+  - ⚠️ 删除后无法恢复！确定删除吗？
+  msgexist: '无法添加: 书签组中已存在 ID 为 [{0}] 的块'
+  msgparse: 无法从[{0}]中解析到块
+  refresh: 刷新
+  rename: 重命名书签组
+  top: 置顶
+  up: 上移
+item:
+  bottom: 置底
+  checkerritem: 查看失效项详情
+  copyitem: 复制到
+  copylink: 复制为链接
+  copyref: 复制为引用
+  del: 删除书签
+  move: 移动
+  msgcopy: 复制为引用
+  style: 样式
+  top: 置顶
+  transfer: 移动到
+itemErr:
+  closed: 笔记本「{0}」已经关闭
+  deleted: '无法找到内容块，可能已经被删除！旧块内容: 「{0}」'
 msg:
-  ruleFailed: '未能正确解析配置规则: {0}'
-  ruleInvalid: '分组规则输入格式有误: {0}'
+  groupNameEmpty: 书签组的名称不能为空!
   itemHasInGroup: 该项已经在目标分组中
   itemNotFoundInGroup: 源分组中没有找到该项
-  groupNameEmpty: 书签组的名称不能为空!
-itemErr:
-  closed: '笔记本「{0}」已经关闭'
-  deleted: '无法找到内容块，可能已经被删除！旧块内容: 「{0}」'
+  ruleFailed: '未能正确解析配置规则: {0}'
+  ruleInvalid: '分组规则输入格式有误: {0}'
+newgroup:
+  choosetemplate: 选择模板
+  desc:
+    attr: 请输入要查找的属性; 可以填写 [属性名], 或者 [属性名][= 或 like][属性值]
+    backlinks: 请输入反链的块 ID
+    sql: 请在下方输入 SQL 查询
+  icondesc: 可以手动选择分组的图标；如果不设置，插件会根据分组类型分配默认的图标。
+  icontitle: 分组图标
+  name:
+  - 书签组名称
+  - 请输入新建书签组名称
+  postprocess:
+    ariaLabel: '<b>容器首个子块: </b>当搜索到的引用块为列表项、引述块的第一个子块时，显示完整的容器块<br/><b>显示为文档块: </b>显示引用块所在的文档，而非引用块本身<br/><b>详情请见
+      README 文档</b>'
+    b2doc: 显示为文档块
+    fb2p: 容器首个子块
+    name: 后处理方案
+    omit: 无处理
+  rinput: 规则取值
+  rtype:
+  - 规则类型
+  - 选择动态规则类型
+  type:
+  - 书签组类型
+  - 选择书签组类型
+ruletype:
+  attr: 块属性
+  backlinks: 反向链接
+  js: Javascript
+  sql: SQL
+selecticon:
+  h3: 请选择图标
+  reset: 重置
+  title: 更改组图标
 setting:
-  replaceDefault:
-    title: 替换内置书签
-    description: '如果启用，则屏蔽默认书签，并且绑定书签快捷键(默认为 Alt+3);<br/>重启后生效; 注意: 移动端不生效'
-  viewMode:
-    title: 展示模式
-    description: 选择书签栏展示的样式
-  hideClosed:
-    title: 隐藏关闭项目
-    description: 开启后，隐藏那些来自被关闭的笔记本中的项目
-  hideDeleted:
-    title: 隐藏无效项目
-    description: 开启后，隐藏那些被删除的项目
-  grouplist:
-    title: 书签组
-    description: 设置书签组
-  autoRefreshOnExpand:
-    title: 展开后刷新
-    description: 展开一个被折叠的动态组时，自动刷新其中的内容
   ariaLabel:
-    title: 显示悬浮框
     description: 鼠标悬停在书签项目上时，在悬浮框中显示书签项目的完整标题
+    title: 显示悬浮框
+  autoRefreshOnExpand:
+    description: 展开一个被折叠的动态组时，自动刷新其中的内容
+    title: 展开后刷新
+  grouplist:
+    description: 设置书签组
+    title: 书签组
+  hideClosed:
+    description: 开启后，隐藏那些来自被关闭的笔记本中的项目
+    title: 隐藏关闭项目
+  hideDeleted:
+    description: 开启后，隐藏那些被删除的项目
+    title: 隐藏无效项目
+  replaceDefault:
+    description: '如果启用，则屏蔽默认书签，并且绑定书签快捷键(默认为 Alt+3);<br/>重启后生效; 注意: 移动端不生效'
+    title: 替换内置书签
+  viewMode:
+    description: 选择书签栏展示的样式
+    title: 展示模式
   zoomInWhenClick:
-    title: 跳转到块后进入聚焦
     description: 当点击书签项目，在标签页中打开内容块的时候，自动进入聚焦模式
+    title: 跳转到块后进入聚焦
+src_components_newgrouptsx:
+  query_block_list: 使用 Javascript 代码查询, 返回 Block[] 列表
+src_components_setting_indextsx:
+  refresh_bookmarks: 当切换文档的时候，自动刷新那些含有{{CurDocId}}模板变量的动态书签组
+  refresh_groups: 切换文档时刷新相关组
+src_model_rulests:
+  js_query_result: JS 查询返回结果必须是块/块ID的列表!
+template:
+  attr:
+    dailynote: Daily Note
+  sql:
+    random: 随机漫游
+    thisday: 历史上的今天
+    todo: 未完成的任务
+    updated: 最近更新
 viewMode:
   bookmark: 书签样式
   card: 卡片样式
-bookmark:
-  new: 新建书签组
-  delete:
-    title: 是否删除书签组{0}[{1}]?
-    desc: ⚠️ 删除后无法恢复！确定删除吗？
-  cache: 缓存当前书签
-  logo:
-    name: 书签
-    setting: 设置
-    add: 添加书签组
-    refresh: 刷新
-    expand: 展开 Ctrl+↓
-    collapse: 折叠 Ctrl+↑
-    min: 最小化 Ctrl+W
-group:
-  msgexist: '无法添加: 书签组中已存在 ID 为 [{0}] 的块'
-  msg404: '无法添加: 未找到 ID 为 [{0}] 的块'
-  refresh: 刷新
-  copyref: 复制为引用列表
-  copylink: 复制为链接列表
-  msgcopy: 复制成功
-  docflow: 文档流
-  rename: 重命名书签组
-  edit: 更改规则值
-  delete: 删除书签组
-  move: 移动
-  top: 置顶
-  up: 上移
-  down: 下移
-  bottom: 置底
-  fromclipboard: 从剪贴板中插入块
-  msgparse: 无法从[{0}]中解析到块
-  currentdoc: 添加当前文档块
-  msgdelconfirm:
-    - 是否删除书签项目{0}?
-    - ⚠️ 删除后无法恢复！确定删除吗？
-item:
-  copyref: 复制为引用
-  copylink: 复制为链接
-  msgcopy: 复制为引用
-  style: 样式
-  transfer: 移动到
-  move: 移动
-  top: 置顶
-  bottom: 置底
-  del: 删除书签
-  checkerritem: 查看失效项详情
-  copyitem: 复制到
-newgroup:
-  name:
-    - 书签组名称
-    - 请输入新建书签组名称
-  type:
-    - 书签组类型
-    - 选择书签组类型
-  rtype:
-    - 规则类型
-    - 选择动态规则类型
-  rinput: 规则取值
-  desc:
-    sql: 请在下方输入 SQL 查询
-    backlinks: 请输入反链的块 ID
-    attr: 请输入要查找的属性; 可以填写 [属性名], 或者 [属性名][= 或 like][属性值]
-  choosetemplate: 选择模板
-  postprocess:
-    ariaLabel: '<b>容器首个子块: </b>当搜索到的引用块为列表项、引述块的第一个子块时，显示完整的容器块<br/><b>显示为文档块: </b>显示引用块所在的文档，而非引用块本身<br/><b>详情请见 README 文档</b>'
-    name: 后处理方案
-    omit: 无处理
-    fb2p: 容器首个子块
-    b2doc: 显示为文档块
-  icontitle: 分组图标
-  icondesc: 可以手动选择分组的图标；如果不设置，插件会根据分组类型分配默认的图标。
-bookmarktype:
-  normal: '普通书签'
-  dynamic: '动态书签'
-  composed: '复合书签'
-ruletype:
-  sql: SQL
-  backlinks: 反向链接
-  attr: 块属性
-  js: Javascript
-template:
-  sql:
-    random: 随机漫游
-    updated: 最近更新
-    thisday: 历史上的今天
-    todo: 未完成的任务
-  attr:
-    dailynote: Daily Note
-selecticon:
-  title: 更改组图标
-  h3: 请选择图标
-  reset: 重置
