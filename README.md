@@ -123,6 +123,10 @@ Example 3, Backlink rule: View backlinks that refer to the current active docume
 {{CurDocId}}
 ```
 
+You can enable the "**Refresh when switching documents**" feature in the bookmark settings. So it will automatically refresh related bookmark groups when you open new documents.
+
+​![动态书签加载](asset/动态书签加载-20250215230033-w127wfx.gif)​
+
 ## Bookmark Items
 
 * Click an item to navigate to the corresponding block
