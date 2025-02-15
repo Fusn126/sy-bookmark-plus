@@ -3,17 +3,20 @@
  * @Author       : Yp Z
  * @Date         : 2023-07-29 15:17:15
  * @FilePath     : /src/model/rules.ts
- * @LastEditTime : 2024-12-15 19:48:53
+ * @LastEditTime : 2025-02-15 23:43:07
  * @Description  : 
  */
 import * as api from "@/api";
-import { fb2p, getBlocksByIDs } from "@/libs/query";
+import { fb2p } from "@/libs/query";
+
+import { id2block } from "@frostime/siyuan-plugin-kits";
 
 import { Caret } from "@/utils/const";
 import { renderTemplate, VAR_NAMES } from "./templating";
 import { fetchPost, showMessage } from "siyuan";
 import { request, sql } from "@/api";
 
+import { i18n } from "@/utils/i18n";
 
 export abstract class MatchRule implements IDynamicRule {
     type: TRuleType;
@@ -114,7 +117,7 @@ export class Backlinks extends MatchRule {
         else if (this.process === 'b2doc') {
             let docIds = blocks.map(b => b.root_id);
             docIds = Array.from(new Set(docIds));
-            let docs = await getBlocksByIDs(...docIds);
+            let docs = await id2block(docIds) as Block[];
             return docs;
         }
         else if (this.process === 'fb2p') {
@@ -270,13 +273,13 @@ class JSQuery extends MatchRule {
         try {
             let func = new Function('kit', 'fetchPost', code);
             let data = await func(kit, fetchPost);
-            console.debug('JS result:', data);
+            // console.debug('JS result:', data);
             if (Array.isArray(data) && data?.length > 0) {
                 if (typeof data[0] === 'string') {
                     if (matchIDFormat(data[0])) {
-                        result = await getBlocksByIDs(...data);
+                        result = await id2block(data) as Block[];
                     } else {
-                        showMessage(((`JS 查询返回结果必须是块/块ID的列表!`)), 3000, 'error');
+                        showMessage(i18n.src_model_rulests.js_query_result, 3000, 'error');
                     }
                 } else {
                     result = data;

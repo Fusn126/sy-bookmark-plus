@@ -1,3 +1,18 @@
+# * `i18n_dir`: 存放翻译文件的目录
+# * `main_file`: 主要语言的翻译文件
+# * `code_files`: 需要扫描的代码文件类型
+# * `i18n_pattern`: 在代码中标记需要翻译的文本的模式
+# * `dict`: 特殊词汇的翻译对照表；你可以把项目中涉及到的一些属于翻译写在这个地方
+# * `strategy`: 翻译策略
+#   * `"diff"` 表示只翻译新增的内容
+#   * `"full"` 表示翻译所有内容
+# * `i18n_var_prefix`: 在代码中使用的替换变量的前缀
+# * `export_dir`: 导出目录，如果设置，将用作 export 命令的输出目录
+# * `i18n_var_mid`: i18n 键的中间部分生成策略。选项包括：
+#   * `"filename"`: 使用完整文件名，包含扩展名，如 `utilsts`
+#   * `"filename_noext"`: 使用不带扩展名的文件名
+#   * `"pathname"`: 使用文件的相对路径
+# 
 code_files:
 - './src/**/*.ts'
 - './src/**/*.tsx'
@@ -6,7 +21,7 @@ dict:
 export_dir: src/types
 i18n_dir: public/i18n
 i18n_pattern: \(\(`(.+?)`\)\)
-i18n_var_mid: filename
+i18n_var_mid: pathname
 i18n_var_prefix: i18n
 main_file: zh_CN.yaml
 strategy: diff

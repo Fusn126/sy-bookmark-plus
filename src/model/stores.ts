@@ -3,20 +3,41 @@
  * @Author       : frostime
  * @Date         : 2024-07-07 14:44:03
  * @FilePath     : /src/model/stores.ts
- * @LastEditTime : 2024-12-28 01:22:56
+ * @LastEditTime : 2025-02-16 00:05:34
  * @Description  : 
  */
-import { createStore } from "solid-js/store";
+import { createStore, unwrap } from "solid-js/store";
 
 import { createMemo } from "solid-js";
 import { wrapStoreRef } from "@frostime/solid-signal-ref";
+import { debounce, thisPlugin } from "@frostime/siyuan-plugin-kits";
 
 export const [itemInfo, setItemInfo] = createStore<{ [key: BlockId]: IBookmarkItemInfo }>({});
 
 export const [groups, setGroups] = createStore<IBookmarkGroup[]>([]);
-export const groupMap = createMemo<Map<TBookmarkGroupId, IBookmarkGroup & {index: number}>>(() => {
-    return new Map(groups.map((group, index) => [group.id, {...group, index: index}]));
+export const groupMap = createMemo<Map<TBookmarkGroupId, IBookmarkGroup & { index: number }>>(() => {
+    return new Map(groups.map((group, index) => [group.id, { ...group, index: index }]));
 });
+
+const StorageNameBookmarks = 'bookmarks';  //书签
+const _saveGroupMap = async (fpath?: string) => {
+    let result: { [key: TBookmarkGroupId]: IBookmarkGroup } = {};
+
+    for (let [id, group] of groupMap()) {
+        result[id] = unwrap(group);
+        let items = unwrap(result[id].items);
+        if (group.type === 'dynamic') {
+            //如果是动态规则，就只保存一部分自定义过的 item
+            items = items.filter(item => item.style);
+        }
+        result[id].items = items;
+    }
+    fpath = fpath ?? StorageNameBookmarks + '.json';
+    await thisPlugin().saveData(fpath, result);
+    return result;
+}
+export const saveGroupMap = debounce(_saveGroupMap, 1000);
+
 
 interface IConfig {
     hideClosed: boolean;
@@ -26,6 +47,7 @@ interface IConfig {
     autoRefreshOnExpand: boolean;
     ariaLabel: boolean;
     zoomInWhenClick: boolean;
+    autoRefreshTemplatingRuleOnSwitchProtyle: boolean;
 }
 
 export const [configs, setConfigs] = createStore<IConfig>({
@@ -35,6 +57,26 @@ export const [configs, setConfigs] = createStore<IConfig>({
     replaceDefault: true,
     autoRefreshOnExpand: false,
     ariaLabel: false,
-    zoomInWhenClick: true
+    zoomInWhenClick: true,
+    autoRefreshTemplatingRuleOnSwitchProtyle: false
 });
 export const configRef = wrapStoreRef(configs, setConfigs);
+
+
+const StorageFileConfigs = 'bookmark-configs.json';  //书签插件相关的配置
+const _saveConfig = async () => {
+    const data = configRef.unwrap();
+    console.debug('save config', data);
+    const plugin = thisPlugin();
+    await plugin.saveData(StorageFileConfigs, data);
+}
+export const saveConfig = debounce(_saveConfig, 750);
+
+export const loadConfig = async () => {
+    const plugin = thisPlugin();
+    let configs_ = await plugin.loadData(StorageFileConfigs) as IConfig;
+    // setConfigs(configs_);
+    if (configs_) {
+        setConfigs({ ...configs, ...configs_ });
+    }
+}

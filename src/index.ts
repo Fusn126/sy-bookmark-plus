@@ -3,7 +3,7 @@
  * @Author       : frostime
  * @Date         : 2024-06-12 19:48:53
  * @FilePath     : /src/index.ts
- * @LastEditTime : 2024-12-29 20:35:01
+ * @LastEditTime : 2025-02-15 23:58:28
  * @Description  : 
  */
 import {
@@ -14,7 +14,7 @@ import { render } from "solid-js/web";
 
 import { solidDialog } from "./libs/dialog";
 
-import { getModel, rmModel, type BookmarkDataModel } from "./model";
+import { configRef, getModel, rmModel, saveConfig, type BookmarkDataModel } from "./model";
 import { configs } from "./model";
 
 import Bookmark from "./components/bookmark";
@@ -30,6 +30,7 @@ import { isMobile } from "./utils";
 import { loadSdk, unloadSdk } from "./sdk";
 
 import { registerPlugin } from "@frostime/siyuan-plugin-kits";
+import { enableAutoRefresh } from "./model/auto-refresh";
 
 let model: BookmarkDataModel;
 
@@ -53,11 +54,44 @@ const destroyBookmark = () => {
     model = null;
     const ele = document.querySelector('span[data-type="sy-bookmark-plus::dock"]') as HTMLElement;
     ele?.remove();
-    removeStyleDom('hide-bookmark');
 };
 
-const bookmarkKeymap = window.siyuan.config.keymap.general.bookmark;
 
+const useSiyuanBookmarkKeymap = () => {
+    const bookmarkKeymap = window.siyuan.config.keymap.general.bookmark;
+    const initial = bookmarkKeymap.custom || bookmarkKeymap.default;
+
+    const pluginKeymap = () => window.siyuan.config.keymap.plugin['sy-bookmark-plus']?.['F-Misc::Bookmark'];
+
+    return {
+        initial,
+        replaceDefault: () => {
+            bookmarkKeymap.custom = '';
+            updateStyleDom('hide-bookmark', `
+                .dock span[data-type="bookmark"] {
+                    display: none;
+                }
+            `);
+            const min = document.querySelector('div.file-tree.sy__bookmark span[data-type="min"]') as HTMLElement;
+            min?.click();
+            const keymap = pluginKeymap();
+            if (keymap) {
+                keymap.custom = initial;
+            }
+        },
+        // 恢复
+        restoreDefault: () => {
+            bookmarkKeymap.custom = initial;
+            removeStyleDom('hide-bookmark');
+            const keymap = pluginKeymap();
+            if (keymap) {
+                keymap.custom = '';
+            }
+        }
+    }
+}
+
+export const bookmarkKeymap = useSiyuanBookmarkKeymap();
 
 
 export default class PluginBookmarkPlus extends Plugin {
@@ -106,20 +140,18 @@ export default class PluginBookmarkPlus extends Plugin {
 
         // useSdk(this);
         loadSdk();
+        if (configRef().autoRefreshTemplatingRuleOnSwitchProtyle) {
+            enableAutoRefresh();
+        }
     }
 
     private replaceDefaultBookmark() {
-        updateStyleDom('hide-bookmark', `
-        .dock span[data-type="bookmark"] {
-            display: none;
-        }
-        `);
-        bookmarkKeymap.custom = '';
-        console.log('bookmarkKeymap', bookmarkKeymap);
+        bookmarkKeymap.replaceDefault();
+
         this.addCommand({
             langKey: 'F-Misc::Bookmark',
             langText: 'F-misc Bookmark',
-            hotkey: bookmarkKeymap.default,
+            hotkey: bookmarkKeymap.initial,
             callback: () => {
                 const ele = document.querySelector(`span[data-type="${this.name}::dock"]`) as HTMLElement;
                 ele?.click();
@@ -130,8 +162,7 @@ export default class PluginBookmarkPlus extends Plugin {
     onunload(): void {
         unloadSdk();
         destroyBookmark();
-        bookmarkKeymap.custom = bookmarkKeymap.default;
-        // this.commands = this.commands.filter((command) => command.langKey !== 'F-Misc::Bookmark');
+        bookmarkKeymap.restoreDefault();
     }
 
     openSetting(): void {
@@ -148,6 +179,10 @@ export default class PluginBookmarkPlus extends Plugin {
         solidDialog({
             title: window.siyuan.languages.config,
             loader: () => Setting(),
+            callback: async () => {
+                await saveConfig();
+                await model.save();
+            },
             ...size
         });
     }

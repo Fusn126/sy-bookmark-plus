@@ -3,17 +3,10 @@
  * @Author       : frostime
  * @Date         : 2024-07-25 21:07:36
  * @FilePath     : /src/libs/query.ts
- * @LastEditTime : 2024-07-25 21:13:38
+ * @LastEditTime : 2025-02-15 19:48:27
  * @Description  : 
  */
 import * as api from '@/api';
-
-export const getBlocksByIDs = async (...ids: BlockId[]) => {
-    let idList = ids.map((id) => `"${id}"`);
-    let sqlCode = `select * from blocks where id in (${idList.join(",")})`;
-    let data = await api.sql(sqlCode);
-    return data;
-}
 
 export const fb2p = async (inputs: Block[]) => {
 

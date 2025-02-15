@@ -18,14 +18,16 @@ import {
     groupMap,
     configs,
     setConfigs,
-    groups
+    groups,
+    loadConfig,
+    saveGroupMap
 } from './stores';
 import { getRule } from "./rules";
 import { formatItemTitle } from "./utils";
 export * from './stores';
 
 const StorageNameBookmarks = 'bookmarks';  //书签
-const StorageFileConfigs = 'bookmark-configs.json';  //书签插件相关的配置
+// const StorageFileConfigs = 'bookmark-configs.json';  //书签插件相关的配置
 const StorageFileItemSnapshot = 'bookmark-items-snapshot.json';  //书签项目的缓存，防止出现例如 box 关闭导致插件以为书签被删除的问题
 
 
@@ -37,19 +39,20 @@ export class BookmarkDataModel {
     }
 
     async load() {
-        let bookmarks = await this.plugin.loadData(StorageNameBookmarks + '.json');
-        let configs_ = await this.plugin.loadData(StorageFileConfigs);
+        let bookmarks = await this.plugin.loadData(StorageNameBookmarks + '.json') as { [key: TBookmarkGroupId]: IBookmarkGroup };
+        // let configs_ = await this.plugin.loadData(StorageFileConfigs);
+        await loadConfig();
         let snapshot: { [key: BlockId]: IBookmarkItemInfo } = await this.plugin.loadData(StorageFileItemSnapshot);
 
-        if (configs_) {
-            setConfigs({ ...configs, ...configs_ });
-        }
+        // if (configs_) {
+        //     setConfigs({ ...configs, ...configs_ });
+        // }
 
-        this.plugin.data.bookmarks = bookmarks ?? {};
+        // this.plugin.data.bookmarks = bookmarks ?? {};
         snapshot = snapshot ?? {};
 
         const allGroups = [];
-        for (let [_, group] of Object.entries(this.plugin.data.bookmarks)) {
+        for (let [_, group] of Object.entries(bookmarks)) {
             let items: IItemCore[] = group.items.map(item => ({ id: item.id, style: item?.style }));
 
             let groupV2: IBookmarkGroup = { ...group, items };
@@ -79,27 +82,13 @@ export class BookmarkDataModel {
     }
 
     private async saveCore(fpath?: string) {
-        // console.debug('save bookmarks');
-        let result: { [key: TBookmarkGroupId]: IBookmarkGroup } = {};
-
-        for (let [id, group] of groupMap()) {
-            result[id] = unwrap(group);
-            let items = unwrap(result[id].items);
-            //如果是动态规则，就只保存一部分自定义过的 item
-            if (group.type === 'dynamic') {
-                items = items.filter(item => item.style);
-            }
-            result[id].items = items;
-        }
-        this.plugin.data.bookmarks = result;
-        fpath = fpath ?? StorageNameBookmarks + '.json';
-        await this.plugin.saveData(fpath, this.plugin.data.bookmarks);
-        await this.plugin.saveData(StorageFileConfigs, configs);
+        console.debug('save bookmarks');
+        await saveGroupMap(fpath);
         await this.plugin.saveData(StorageFileItemSnapshot, itemInfo);
     }
 
     // save = debounce(this.saveCore.bind(this), 1000);
-    save = debounce(this.saveCore.bind(this) as typeof this.saveCore, 1000);
+    save = debounce(this.saveCore.bind(this) as typeof this.saveCore, 2000);
 
     setGroups(gid: TBookmarkGroupId, key: keyof IBookmarkGroup, value: IBookmarkGroup[keyof IBookmarkGroup]) {
         setGroups((gs) => gs.id === gid, key, value);

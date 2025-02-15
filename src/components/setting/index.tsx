@@ -1,11 +1,13 @@
 import Form from "@/libs/components/Form";
 import GroupList from './group-list';
-import { configs, setConfigs } from "@/model";
+import { configs, saveConfig, setConfigs } from "@/model";
 
 import { i18n } from "@/utils/i18n";
 import { children, Component, For, JSXElement } from "solid-js";
 import { useSignalRef } from "@frostime/solid-signal-ref";
 import { Dynamic } from "solid-js/web";
+import { bookmarkKeymap } from "@/index";
+import { disableAutoRefresh, enableAutoRefresh } from "@/model/auto-refresh";
 
 interface SettingPanelProps {
     group: string;
@@ -79,6 +81,13 @@ const App = () => {
                 value: configs['autoRefreshOnExpand']
             },
             {
+                key: 'autoRefreshTemplatingRuleOnSwitchProtyle',
+                type: 'checkbox',
+                title: i18n.src_components_setting_indextsx.refresh_groups,
+                description: i18n.src_components_setting_indextsx.refresh_bookmarks,
+                value: configs['autoRefreshTemplatingRuleOnSwitchProtyle']
+            },
+            {
                 key: 'hideClosed',
                 type: 'checkbox',
                 title: i18n_.hideClosed.title,
@@ -115,6 +124,22 @@ const App = () => {
                 onChanged={({ key, value }) => {
                     //@ts-ignore
                     setConfigs(key, value);
+                    saveConfig();
+                    if (key === 'replaceDefault') {
+                        if (value) {
+                            bookmarkKeymap.replaceDefault();
+                        }
+                        else {
+                            bookmarkKeymap.restoreDefault();
+                        }
+                    } else if (key === 'autoRefreshTemplatingRuleOnSwitchProtyle') {
+                        if (value) {
+                            enableAutoRefresh();
+                        }
+                        else {
+                            disableAutoRefresh();
+                        }
+                    }
                 }}
             />
         );
@@ -131,8 +156,8 @@ const App = () => {
     }
 
     const groups = {
-        'Basic': PanelBasic,
-        'GroupList': PanelGroupList
+        '🐤 Basic': PanelBasic,
+        '📋 GroupList': PanelGroupList
     }
 
 

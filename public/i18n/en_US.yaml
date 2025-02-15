@@ -128,6 +128,14 @@ setting:
     description: When clicking on the bookmark item and opening the content block
       in the tab, automatically enter the focus mode
     title: Enter focus mode after jumping to the block
+src_components_newgrouptsx:
+  query_block_list: Query using Javascript code and return a list of Block[]
+src_components_setting_indextsx:
+  refresh_bookmarks: When switching documents, automatically refresh dynamic bookmark
+    groups that contain the {{CurDocId}} template variable
+  refresh_groups: Refresh when switching documents
+src_model_rulests:
+  js_query_result: The result of the JS query must be a list of blocks/block IDs!
 template:
   attr:
     dailynote: Daily Note

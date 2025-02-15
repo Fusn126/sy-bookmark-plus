@@ -165,7 +165,7 @@ const RuleEditor = () => {
 
             case 'js':
                 return {
-                    desc: ((`使用 Javascript 代码查询, 返回 Block[] 列表`)),
+                    desc: i18n.src_components_newgrouptsx.query_block_list,
                     direction: "row",
                 }
 
