@@ -6,6 +6,7 @@ import { i18n } from "@/utils/i18n";
 import { children, Component, For, JSXElement } from "solid-js";
 import { useSignalRef } from "@frostime/solid-signal-ref";
 import { Dynamic } from "solid-js/web";
+import { bookmarkKeymap } from "@/index";
 
 interface SettingPanelProps {
     group: string;
@@ -116,6 +117,14 @@ const App = () => {
                     //@ts-ignore
                     setConfigs(key, value);
                     saveConfig();
+                    if (key === 'replaceDefault') {
+                        if (value) {
+                            bookmarkKeymap.replaceDefault();
+                        }
+                        else {
+                            bookmarkKeymap.restoreDefault();
+                        }
+                    }
                 }}
             />
         );
@@ -132,8 +141,8 @@ const App = () => {
     }
 
     const groups = {
-        'Basic': PanelBasic,
-        'GroupList': PanelGroupList
+        '🐤 Basic': PanelBasic,
+        '📋 GroupList': PanelGroupList
     }
 
 

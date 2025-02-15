@@ -3,7 +3,7 @@
  * @Author       : frostime
  * @Date         : 2024-06-12 19:48:53
  * @FilePath     : /src/index.ts
- * @LastEditTime : 2025-02-15 19:26:49
+ * @LastEditTime : 2025-02-15 20:11:28
  * @Description  : 
  */
 import {
@@ -53,11 +53,44 @@ const destroyBookmark = () => {
     model = null;
     const ele = document.querySelector('span[data-type="sy-bookmark-plus::dock"]') as HTMLElement;
     ele?.remove();
-    removeStyleDom('hide-bookmark');
 };
 
-const bookmarkKeymap = window.siyuan.config.keymap.general.bookmark;
 
+const useSiyuanBookmarkKeymap = () => {
+    const bookmarkKeymap = window.siyuan.config.keymap.general.bookmark;
+    const initial = bookmarkKeymap.custom || bookmarkKeymap.default;
+
+    const pluginKeymap = () => window.siyuan.config.keymap.plugin['sy-bookmark-plus']?.['F-Misc::Bookmark'];
+
+    return {
+        initial,
+        replaceDefault: () => {
+            bookmarkKeymap.custom = '';
+            updateStyleDom('hide-bookmark', `
+                .dock span[data-type="bookmark"] {
+                    display: none;
+                }
+            `);
+            const min = document.querySelector('div.file-tree.sy__bookmark span[data-type="min"]') as HTMLElement;
+            min?.click();
+            const keymap = pluginKeymap();
+            if (keymap) {
+                keymap.custom = initial;
+            }
+        },
+        // 恢复
+        restoreDefault: () => {
+            bookmarkKeymap.custom = initial;
+            removeStyleDom('hide-bookmark');
+            const keymap = pluginKeymap();
+            if (keymap) {
+                keymap.custom = '';
+            }
+        }
+    }
+}
+
+export const bookmarkKeymap = useSiyuanBookmarkKeymap();
 
 
 export default class PluginBookmarkPlus extends Plugin {
@@ -109,18 +142,12 @@ export default class PluginBookmarkPlus extends Plugin {
     }
 
     private replaceDefaultBookmark() {
-        updateStyleDom('hide-bookmark', `
-        .dock span[data-type="bookmark"] {
-            display: none;
-        }
-        `);
-        bookmarkKeymap.custom = '';
-        console.debug(`Replace SiYuan default bookmark`, bookmarkKeymap);
+        bookmarkKeymap.replaceDefault();
 
         this.addCommand({
             langKey: 'F-Misc::Bookmark',
             langText: 'F-misc Bookmark',
-            hotkey: bookmarkKeymap.default,
+            hotkey: bookmarkKeymap.initial,
             callback: () => {
                 const ele = document.querySelector(`span[data-type="${this.name}::dock"]`) as HTMLElement;
                 ele?.click();
@@ -131,8 +158,7 @@ export default class PluginBookmarkPlus extends Plugin {
     onunload(): void {
         unloadSdk();
         destroyBookmark();
-        bookmarkKeymap.custom = bookmarkKeymap.default;
-        // this.commands = this.commands.filter((command) => command.langKey !== 'F-Misc::Bookmark');
+        bookmarkKeymap.restoreDefault();
     }
 
     openSetting(): void {
