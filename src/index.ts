@@ -3,7 +3,7 @@
  * @Author       : frostime
  * @Date         : 2024-06-12 19:48:53
  * @FilePath     : /src/index.ts
- * @LastEditTime : 2025-02-15 23:58:28
+ * @LastEditTime : 2025-02-20 20:47:27
  * @Description  : 
  */
 import {
@@ -29,12 +29,12 @@ import { isMobile } from "./utils";
 
 import { loadSdk, unloadSdk } from "./sdk";
 
-import { registerPlugin } from "@frostime/siyuan-plugin-kits";
+import { registerPlugin, thisPlugin } from "@frostime/siyuan-plugin-kits";
 import { enableAutoRefresh } from "./model/auto-refresh";
 
 let model: BookmarkDataModel;
 
-const initBookmark = async (ele: HTMLElement, plugin: PluginBookmarkPlus) => {
+const initBookmark = async (ele: HTMLElement, sourceView?: string) => {
     ele.classList.add('fn__flex-column');
 
     if (isMobile()) {
@@ -43,8 +43,10 @@ const initBookmark = async (ele: HTMLElement, plugin: PluginBookmarkPlus) => {
         if (empty) empty.style.display = 'none';
     }
     render(() => Bookmark({
-        plugin: plugin,
-        model: model
+        //@ts-ignore
+        plugin: thisPlugin(),
+        model: model,
+        sourceView: sourceView ?? 'DEFAULT'
     }), ele);
     await model.updateAll();
 };
@@ -134,7 +136,7 @@ export default class PluginBookmarkPlus extends Plugin {
                 initBookmark: initBookmark,
             },
             init() {
-                this.data.initBookmark(this.element, this.data.plugin);
+                this.data.initBookmark(this.element, 'DEFAULT');
             }
         });
 

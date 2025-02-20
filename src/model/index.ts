@@ -16,11 +16,11 @@ import {
     setItemInfo,
     setGroups,
     groupMap,
-    configs,
-    setConfigs,
     groups,
     loadConfig,
-    saveGroupMap
+    loadSubViews,
+    saveGroupMap,
+    saveSubViews
 } from './stores';
 import { getRule } from "./rules";
 import { formatItemTitle } from "./utils";
@@ -42,6 +42,7 @@ export class BookmarkDataModel {
         let bookmarks = await this.plugin.loadData(StorageNameBookmarks + '.json') as { [key: TBookmarkGroupId]: IBookmarkGroup };
         // let configs_ = await this.plugin.loadData(StorageFileConfigs);
         await loadConfig();
+        await loadSubViews();
         let snapshot: { [key: BlockId]: IBookmarkItemInfo } = await this.plugin.loadData(StorageFileItemSnapshot);
 
         // if (configs_) {
@@ -84,6 +85,7 @@ export class BookmarkDataModel {
     private async saveCore(fpath?: string) {
         console.debug('save bookmarks');
         await saveGroupMap(fpath);
+        await saveSubViews();
         await this.plugin.saveData(StorageFileItemSnapshot, itemInfo);
     }
 

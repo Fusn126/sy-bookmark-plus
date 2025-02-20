@@ -1,8 +1,8 @@
-import { Component, For, createMemo, createSignal } from "solid-js";
+import { Component, For, Show, createMemo, createSignal } from "solid-js";
 import { render } from "solid-js/web";
 import Group from "./group";
 import { confirm, Menu, Plugin, showMessage } from "siyuan";
-import { type BookmarkDataModel, configs, groups } from "../model";
+import { type BookmarkDataModel, configs, groupMap, groups, subViews } from "../model";
 import { confirmDialog } from "@/libs/dialog";
 
 import { BookmarkContext } from "./context";
@@ -11,10 +11,6 @@ import NewGroup from "./new-group";
 
 import { i18n, renderI18n } from "@/utils/i18n";
 
-interface Props {
-    plugin: Plugin;
-    model: BookmarkDataModel;
-}
 
 const createNewGroup = (confirmCb: (data: any) => void) => {
     let container = document.createElement("div") as HTMLDivElement;
@@ -48,7 +44,19 @@ const createNewGroup = (confirmCb: (data: any) => void) => {
     });
 }
 
-const BookmarkComponent: Component<Props> = (props) => {
+
+/**
+ * Bookmark 组件
+ * @param props
+ * @param props.plugin
+ * @param props.model
+ * @param props.sourceView: 来源, 默认的书签组或者是自定义的书签组视图
+ */
+const BookmarkComponent: Component<{
+    plugin: Plugin;
+    model: BookmarkDataModel;
+    sourceView: 'DEFAULT' | string;
+}> = (props) => {
 
     const I18N = i18n.bookmark;
 
@@ -58,8 +66,14 @@ const BookmarkComponent: Component<Props> = (props) => {
     const [doAction, setDoAction] = createSignal<TAction>("");
 
     const shownGroups = createMemo(() => {
-        let newg = groups.filter(group => !group.hidden);
-        return newg;
+        if (props.sourceView === "DEFAULT") {
+            return groups.filter(group => !group.hidden);
+        } else {
+            const view = subViews()[props.sourceView];
+            if (!view) return [];
+            const groups = view.groups.map(g => groupMap()[g]).filter(group => Boolean(group));
+            return groups;
+        }
     });
 
     const groupAdd = () => {
@@ -161,28 +175,30 @@ const BookmarkComponent: Component<Props> = (props) => {
                     {I18N.logo.name}
                 </div>
                 <span class="fn__flex-1"></span>
-                <span
-                    data-type="setting"
-                    class="block__icon ariaLabel"
-                    aria-label={I18N.logo.setting}
-                    onClick={props.plugin.openSetting}
-                >
-                    <svg class="">
-                        <use href="#iconSettings"></use>
-                    </svg>
-                </span>
-                <span class="fn__space"></span>
-                <span
-                    data-type="add"
-                    class="block__icon ariaLabel"
-                    aria-label={I18N.logo.add}
-                    onClick={groupAdd}
-                >
-                    <svg class="">
-                        <use href="#iconAdd"></use>
-                    </svg>
-                </span>
-                <span class="fn__space"></span>
+                <Show when={props.sourceView === "DEFAULT"}>
+                    <span
+                        data-type="setting"
+                        class="block__icon ariaLabel"
+                        aria-label={I18N.logo.setting}
+                        onClick={props.plugin.openSetting}
+                    >
+                        <svg class="">
+                            <use href="#iconSettings"></use>
+                        </svg>
+                    </span>
+                    <span class="fn__space"></span>
+                    <span
+                        data-type="add"
+                        class="block__icon ariaLabel"
+                        aria-label={I18N.logo.add}
+                        onClick={groupAdd}
+                    >
+                        <svg class="">
+                            <use href="#iconAdd"></use>
+                        </svg>
+                    </span>
+                    <span class="fn__space"></span>
+                </Show>
                 <span
                     data-type="refresh"
                     class="block__icon ariaLabel"
