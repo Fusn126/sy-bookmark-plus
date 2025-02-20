@@ -3,7 +3,7 @@
  * @Author       : frostime
  * @Date         : 2024-12-15 23:01:47
  * @FilePath     : /src/types/bookmark.d.ts
- * @LastEditTime : 2025-02-20 21:12:28
+ * @LastEditTime : 2025-02-20 22:30:51
  * @Description  : 
  */
 /// <reference types="siyuan" />
@@ -60,12 +60,13 @@ interface IBookmarkGroup {
 interface IBookmarkSubView {
     id: TBookmarkSubViewId;
     name: string;
-    groups: TBookmarkGroupId[];
-    expand?: Record<TBookmarkGroupId, boolean>;
-    hidden?: boolean;
+    hidden?: boolean; // View 本身是否需要加入到 Dock 当中
     icon?: {
-        type: 'symbol' | 'emoji' | ''; value: string;
-    }
+        type: 'symbol' | 'emoji' | '';
+        value: string;  // Dock 的 Icon
+    };
+    groups: TBookmarkGroupId[];  //内部包含的 Group
+    expand: Record<TBookmarkGroupId, boolean>;
     dockPosition?: 'RightTop' | 'RightBottom' | 'LeftTop' | 'LeftBottom';
 }
 

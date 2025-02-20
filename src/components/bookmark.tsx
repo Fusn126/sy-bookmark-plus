@@ -2,7 +2,7 @@ import { Component, For, Show, createMemo, createSignal } from "solid-js";
 import { render } from "solid-js/web";
 import Group from "./group";
 import { confirm, Menu, Plugin, showMessage } from "siyuan";
-import { type BookmarkDataModel, configs, groupMap, groups, subViews } from "../model";
+import { type BookmarkDataModel, configs, groups, subViews } from "../model";
 import { confirmDialog } from "@/libs/dialog";
 
 import { BookmarkContext } from "./context";
@@ -71,8 +71,14 @@ const BookmarkComponent: Component<{
         } else {
             const view = subViews()[props.sourceView];
             if (!view) return [];
-            const groups = view.groups.map(g => groupMap()[g]).filter(group => Boolean(group));
-            return groups;
+            let ans = [];
+            // let ans = groups.map(g => view.groups.includes(g.id));
+            for (const g of groups) {
+                if (view.groups.includes(g.id)) {
+                    ans.push(g);
+                }
+            }
+            return ans;
         }
     });
 
@@ -144,6 +150,7 @@ const BookmarkComponent: Component<{
     };
 
     const bookmarkContextMenu = (e: MouseEvent) => {
+        if (props.sourceView !== 'DEFAULT') return;
         const menu = new Menu();
         menu.addItem({
             label: i18n.bookmark.cache,
@@ -162,6 +169,20 @@ const BookmarkComponent: Component<{
         });
     };
 
+    const viewIcon = () => {
+        if (props.sourceView !== 'DEFAULT') {
+            const icon = subViews()[props.sourceView]?.icon;
+            if (icon?.type === 'symbol') {
+                return icon.value;
+            }
+        }
+        return 'iconBookmark';
+    }
+
+    const viewName = () => {
+        return props.sourceView !== 'DEFAULT' ? subViews()[props.sourceView].name : I18N.logo.name;
+    }
+
     const Bookmark = () => (
         <section id="custom-bookmark-container" style={{
             display: 'contents',
@@ -170,9 +191,9 @@ const BookmarkComponent: Component<{
             >
                 <div class="block__logo">
                     <svg class="block__logoicon">
-                        <use href="#iconBookmark"></use>
+                        <use href={`#${viewIcon()}`}></use>
                     </svg>
-                    {I18N.logo.name}
+                    {viewName()}
                 </div>
                 <span class="fn__flex-1"></span>
                 <Show when={props.sourceView === "DEFAULT"}>
@@ -198,18 +219,18 @@ const BookmarkComponent: Component<{
                         </svg>
                     </span>
                     <span class="fn__space"></span>
+                    <span
+                        data-type="refresh"
+                        class="block__icon ariaLabel"
+                        aria-label={I18N.logo.refresh}
+                        onClick={bookmarkRefresh}
+                    >
+                        <svg class={fnRotate()}>
+                            <use href="#iconRefresh"></use>
+                        </svg>
+                    </span>
+                    <span class="fn__space"></span>
                 </Show>
-                <span
-                    data-type="refresh"
-                    class="block__icon ariaLabel"
-                    aria-label={I18N.logo.refresh}
-                    onClick={bookmarkRefresh}
-                >
-                    <svg class={fnRotate()}>
-                        <use href="#iconRefresh"></use>
-                    </svg>
-                </span>
-                <span class="fn__space"></span>
                 <span
                     data-type="expand"
                     class="block__icon ariaLabel"
@@ -255,7 +276,6 @@ const BookmarkComponent: Component<{
                     {(group) => (
                         <Group
                             group={group}
-                            // ref={(el) => (groupComponent()[i] = el)}
                             groupDelete={groupDelete}
                             groupMove={groupMove}
                         />
@@ -265,9 +285,18 @@ const BookmarkComponent: Component<{
         </section>
     );
 
-    return (<BookmarkContext.Provider value={{ plugin: props.plugin, model: props.model, shownGroups, doAction }}>
-        <Bookmark />
-    </BookmarkContext.Provider>);
+    return (
+        <BookmarkContext.Provider
+            value={{
+                plugin: props.plugin,
+                model: props.model,
+                subViewId: props.sourceView,
+                shownGroups, doAction
+            }}
+        >
+            <Bookmark />
+        </BookmarkContext.Provider>
+    );
 };
 
 export default BookmarkComponent;

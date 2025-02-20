@@ -10,7 +10,7 @@ import { ClassName } from "@/libs/dom";
 import { i18n, renderI18n } from "@/utils/i18n";
 
 import Item from "./item";
-import { groups, setGroups, configs, itemInfo } from "../model";
+import { groups, setGroups, configs, itemInfo, subViews } from "../model";
 import { BookmarkContext, itemMoving, setItemMoving, groupDrop, setGroupDrop } from "./context";
 import { getActiveDoc } from "@/utils";
 import Icon from "./icon";
@@ -65,14 +65,13 @@ const useGroupIcon = (props: Parameters<typeof Group>[0]) => {
 }
 
 
-interface Props {
+const Group: Component<{
     group: IBookmarkGroup;
     groupDelete: (g: IBookmarkGroup) => void;
     groupMove: (e: { to: string, group: IBookmarkGroup }) => void;
-}
-
-const Group: Component<Props> = (props) => {
-    const { model, doAction } = useContext(BookmarkContext);
+}> = (props) => {
+    const context = useContext(BookmarkContext);
+    const { model, doAction } = context;
 
     const { IconView, changeGroupIcon } = useGroupIcon(props);
 
@@ -95,6 +94,14 @@ const Group: Component<Props> = (props) => {
     });
 
     const isOpen = createMemo(() => {
+        // 如果在 sub view 当中，那么首先尝试从 view 的数据结构中获取配置信息
+        if (context.subViewId !== 'DEFAULT') {
+            const view = subViews()[context.subViewId];
+            let expand = view?.expand[props.group.id];
+            if (expand !== undefined) {
+                return !expand;
+            }
+        }
         let index = groups.findIndex((g) => g.id === props.group.id);
         let group = groups[index];
         return group.expand !== undefined ? !group.expand : true;
@@ -110,7 +117,14 @@ const Group: Component<Props> = (props) => {
             });
         }
 
-        setGroups((g) => g.id === props.group.id, 'expand', expand);
+        if (context.subViewId === 'DEFAULT') {
+            setGroups((g) => g.id === props.group.id, 'expand', expand);
+        } else {
+            if (subViews()[context.subViewId].expand === undefined) {
+                subViews.update(context.subViewId, 'expand', {});
+            }
+            subViews.update(context.subViewId, 'expand', props.group.id, expand);
+        }
         model.save();
     };
 

@@ -3,7 +3,7 @@
  * @Author       : frostime
  * @Date         : 2024-06-12 19:48:53
  * @FilePath     : /src/index.ts
- * @LastEditTime : 2025-02-20 20:47:27
+ * @LastEditTime : 2025-02-20 22:06:59
  * @Description  : 
  */
 import {
@@ -14,7 +14,7 @@ import { render } from "solid-js/web";
 
 import { solidDialog } from "./libs/dialog";
 
-import { configRef, getModel, rmModel, saveConfig, type BookmarkDataModel } from "./model";
+import { configRef, getModel, rmModel, saveConfig, subViews, type BookmarkDataModel } from "./model";
 import { configs } from "./model";
 
 import Bookmark from "./components/bookmark";
@@ -139,6 +139,33 @@ export default class PluginBookmarkPlus extends Plugin {
                 this.data.initBookmark(this.element, 'DEFAULT');
             }
         });
+
+        for (let [vid, view] of Object.entries(subViews())) {
+            if (view.hidden === true) continue;
+            let icon = 'iconEmoji';
+            if (view.icon?.type === 'symbol') {
+                icon = view.icon.value;
+            }
+            this.addDock({
+                type: '::sub-view::' + vid,
+                config: {
+                    position: view.dockPosition ?? 'RightBottom',
+                    size: {
+                        width: 200,
+                        height: 200,
+                    },
+                    icon: icon,
+                    title: view.name || 'Bookmark+'
+                },
+                data: {
+                    plugin: this,
+                    initBookmark: initBookmark,
+                },
+                init() {
+                    this.data.initBookmark(this.element, vid);
+                }
+            });
+        }
 
         // useSdk(this);
         loadSdk();
