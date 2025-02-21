@@ -1,11 +1,14 @@
 import { createMemo, For } from "solid-js";
-import { groups, setGroups, itemInfo } from "../../model";
+import { groups, setGroups, itemInfo, getModel } from "../../model";
 import { moveItem } from "../../libs/op";
 import { GroupIcon } from "../elements/group-icon";
+import { selectGroupIcon } from "../elements/select-icon";
 
 
 
 const App = () => {
+
+    const model = getModel();
 
     let Counts = createMemo(() => {
         let Cnt: { [key: string]: { indexed: number, closed: number, deleted: number } } = {};
@@ -77,7 +80,21 @@ const App = () => {
                         {/* <svg class="b3-list-item__graphic">
                             <GroupIcon group={group}/>
                         </svg> */}
-                        <GroupIcon group={group}/>
+                        <span style={{ display: 'contents' }} onClick={(e: MouseEvent) => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            selectGroupIcon({
+                                show: 'all',
+                                onReset: () => {
+                                    model.setGroups(group.id, 'icon', null);
+                                },
+                                onUpdate: (icon) => {
+                                    model.setGroups(group.id, 'icon', icon);
+                                }
+                            })
+                        }}>
+                            <GroupIcon group={group} />
+                        </span>
 
                         <span class="b3-list-item__text ariaLabel" data-position="parentE">
                             {group.name}

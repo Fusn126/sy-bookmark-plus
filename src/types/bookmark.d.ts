@@ -3,7 +3,7 @@
  * @Author       : frostime
  * @Date         : 2024-12-15 23:01:47
  * @FilePath     : /src/types/bookmark.d.ts
- * @LastEditTime : 2025-02-20 22:30:51
+ * @LastEditTime : 2025-02-21 22:53:37
  * @Description  : 
  */
 /// <reference types="siyuan" />
@@ -50,7 +50,8 @@ interface IBookmarkGroup {
     type?: TBookmarkGroupType;
     rule?: IDynamicRule;
     icon?: {
-        type: 'symbol' | 'emoji' | ''; value: string;
+        type: 'symbol' | 'emoji' | '';
+        value: string;
     }
 }
 

@@ -4,6 +4,9 @@ import { confirmDialog } from "@/libs/dialog";
 import { showMessage } from "siyuan";
 import { inputDialog } from "@frostime/siyuan-plugin-kits";
 import { GroupIcon } from "../elements/group-icon";
+import Icon from "../elements/icon";
+import { selectGroupIcon } from "../elements/select-icon";
+import { SelectInput } from "@/libs/components/Elements";
 
 
 const SubViewList: Component = () => {
@@ -136,6 +139,43 @@ const SubViewList: Component = () => {
         }
     }
 
+    const BookmarkGroupItem: Component<{
+        group: IBookmarkGroup;
+        checked: boolean;
+        draggable?: boolean;
+        onToggle: () => void;
+        onDragStart?: (e: DragEvent) => void;
+        onDragOver?: (e: DragEvent) => void;
+        onDrop?: (e: DragEvent) => void;
+    }> = (props) => {
+        return (
+            <div
+                style={{
+                    display: "flex",
+                    "align-items": "center",
+                    padding: "8px",
+                    "border-radius": "4px",
+                    'border': '1px solid var(--b3-border-color)',
+                    cursor: props.draggable ? "move" : "default",
+                    gap: "4px"
+                }}
+                draggable={props.draggable}
+                onDragStart={props.onDragStart}
+                onDragOver={props.onDragOver}
+                onDrop={props.onDrop}
+            >
+                <input
+                    type="checkbox"
+                    checked={props.checked}
+                    onChange={props.onToggle}
+                    style={{ margin: "0 8px 0 0" }}
+                />
+                <GroupIcon group={props.group} />
+                <span>{props.group.name}</span>
+            </div>
+        );
+    };
+
     return (
         <div
             class="fn__flex fn__flex-1 bookmark-config-group-list"
@@ -187,7 +227,47 @@ const SubViewList: Component = () => {
                             "margin-bottom": editingView() === view.id ? "16px" : "0"
                         }}>
                             <div style={{ display: "flex", "align-items": "center", gap: "8px" }}>
-                                <span style={{ "font-weight": "500" }}>{view.name}</span>
+                                <span style={{ display: 'contents', cursor: 'pointer' }} onClick={(e: MouseEvent) => {
+                                    e.stopPropagation();
+                                    e.preventDefault();
+                                    selectGroupIcon({
+                                        show: 'symbols',
+                                        onReset: () => {},
+                                        onUpdate: (icon) => {
+                                            subViews.update(view.id, 'icon', icon);
+                                        }
+                                    })
+                                }}>
+                                    <Icon symbol={view.icon.value} />
+                                </span>
+                                <span style={{ "font-weight": "500" }}
+                                    onClick={(e: MouseEvent) => {
+                                        e.preventDefault();
+                                        inputDialog({
+                                            title: '修改视图名称',
+                                            defaultText: view.name,
+                                            confirm: (value: string) => {
+                                                subViews.update(view.id, 'name', value);
+                                            }
+                                        })
+                                    }}
+                                >
+                                    {view.name}
+                                </span>
+                            </div>
+                            <div style={{ display: "flex", gap: "12px", "align-items": "center" }}>
+                                <SelectInput
+                                    value={view.dockPosition ?? "RightBottom"}
+                                    options={{
+                                        "LeftTop": "左上",
+                                        "LeftBottom": "左下",
+                                        "RightTop": "右上",
+                                        "RightBottom": "右下"
+                                    }}
+                                    changed={(value: "RightTop" | "RightBottom" | "LeftTop" | "LeftBottom") => {
+                                        subViews.update(view.id, 'dockPosition', value);
+                                    }}
+                                />
                                 <div
                                     onClick={() => toggleViewVisibility(view.id)}
                                     style={{ cursor: "pointer" }}
@@ -196,8 +276,6 @@ const SubViewList: Component = () => {
                                         <use href={view.hidden ? "#iconEyeoff" : "#iconEye"}></use>
                                     </svg>
                                 </div>
-                            </div>
-                            <div style={{ display: "flex", gap: "12px" }}>
                                 <div
                                     onClick={() => setEditingView(view.id === editingView() ? null : view.id)}
                                     style={{ cursor: "pointer" }}
@@ -229,53 +307,25 @@ const SubViewList: Component = () => {
                                 <div style={{ "font-weight": "500" }}>当前视图包含的书签组</div>
                                 <For each={viewGroups().inViews}>
                                     {(group) => (
-                                        <div
-                                            style={{
-                                                display: "flex",
-                                                "align-items": "center",
-                                                padding: "8px",
-                                                // background: "var(--b3-theme-background)",
-                                                "border-radius": "4px",
-                                                'border': '1px solid var(--b3-border-color)',
-                                                cursor: "move",
-                                                gap: "4px"
-                                            }}
+                                        <BookmarkGroupItem
+                                            group={group}
+                                            checked={true}
                                             draggable={true}
+                                            onToggle={() => toggleGroupInView(view.id, group.id)}
                                             onDragStart={(e) => handleDragStart(group.id, e)}
                                             onDragOver={handleDragOver}
                                             onDrop={(e) => handleDrop(view.id, group.id, e)}
-                                        >
-                                            <input
-                                                type="checkbox"
-                                                checked={true}
-                                                onChange={() => toggleGroupInView(view.id, group.id)}
-                                                style={{ margin: "0 8px 0 0" }}
-                                            />
-                                            <GroupIcon group={group} />
-                                            <span>{group.name}</span>
-                                        </div>
+                                        />
                                     )}
                                 </For>
                                 <div style={{ "font-weight": "500" }}>其他书签组</div>
                                 <For each={viewGroups().notInView}>
                                     {(group) => (
-                                        <div style={{
-                                            display: "flex",
-                                            "align-items": "center",
-                                            padding: "8px",
-                                            "border-radius": "4px",
-                                            'border': '1px solid var(--b3-border-color)',
-                                            gap: "4px"
-                                        }}>
-                                            <input
-                                                type="checkbox"
-                                                checked={false}
-                                                onChange={() => toggleGroupInView(view.id, group.id)}
-                                                style={{ margin: "0 8px 0 0" }}
-                                            />
-                                            <GroupIcon group={group} />
-                                            <span>{group.name}</span>
-                                        </div>
+                                        <BookmarkGroupItem
+                                            group={group}
+                                            checked={false}
+                                            onToggle={() => toggleGroupInView(view.id, group.id)}
+                                        />
                                     )}
                                 </For>
                             </div>

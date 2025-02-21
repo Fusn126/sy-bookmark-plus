@@ -1,5 +1,3 @@
-import { unwrap } from "solid-js/store";
-
 import type PluginBookmarkPlus from "@/index";
 
 import { getBlocks, getDocInfos } from "./data";
