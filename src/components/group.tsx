@@ -13,16 +13,19 @@ import Item from "./item";
 import { groups, setGroups, configs, itemInfo, subViews } from "../model";
 import { BookmarkContext, itemMoving, setItemMoving, groupDrop, setGroupDrop } from "./context";
 import { getActiveDoc } from "@/utils";
-import Icon from "./icon";
-import { parseEmoji } from "./icon";
+import { parseEmoji } from "./elements/icon";
 
-import { selectGroupIcon } from "./select-icon";
+import { selectGroupIcon } from "./elements/select-icon";
+import { GroupIcon } from "./elements/group-icon";
 
-const useGroupIcon = (props: Parameters<typeof Group>[0]) => {
+const useGroupIcon = (props: {
+    group: IBookmarkGroup;
+}) => {
     const { model } = useContext(BookmarkContext);
 
     const changeGroupIcon = () => {
         selectGroupIcon({
+            show: 'all',
             onReset: () => {
                 model.setGroups(props.group.id, 'icon', null);
                 showMessage('Reset!');
@@ -40,21 +43,9 @@ const useGroupIcon = (props: Parameters<typeof Group>[0]) => {
         changeGroupIcon();
     }
 
-    const ShowIcon = (icon?: {
-        type: 'symbol' | 'emoji' | ''; value: string;
-    }) => {
-        if (!icon || icon.type === '') {
-            return <Icon symbol={(!props.group.type || props.group.type === 'normal') ? 'iconFolder' : 'iconSearch'} />
-        } else if (icon.type === 'symbol') {
-            return <Icon symbol={icon.value} />
-        } else if (icon.type === 'emoji') {
-            return <Icon emojiCode={icon.value} />
-        }
-    }
-
     const IconView = () => (
         <span class="group-icon__wrapper" style={{ display: 'contents' }} onClick={onClickIcon}>
-            {(() => ShowIcon(props.group.icon))()}
+            <GroupIcon group={props.group} />
         </span>
     )
 

@@ -12,15 +12,12 @@ type ImojiGroup = {
     }[]
 }
 
-interface IProps {
+const SelectIcons = (props: {
+    show: 'symbols' | 'emojis' | 'all';
     choose: (args: { type: 'symbol' | 'emoji' | ''; value: string }) => void;
-}
-
-const SelectIcons = (props: IProps) => {
+}) => {
     const [activeTab, setActiveTab] = createSignal<'symbols' | 'emojis'>('symbols');
     const symbols = Array.from(document.querySelectorAll('symbol'));
-
-    // const i18n = inject<I18n>('i18n');
 
     const ALLOWED_EMOJI_GROUP = ['activity', 'travel', 'people', 'nature', 'food', 'symbols', 'object', 'flags'];
     let EmojisGroups = (window.siyuan.emojis as ImojiGroup[]).filter(emoji => ALLOWED_EMOJI_GROUP.includes(emoji.id));
@@ -60,8 +57,14 @@ const SelectIcons = (props: IProps) => {
             <div style={{ display: 'flex', 'align-items': 'center', gap: '15px' }}>
                 <h3>{i18n.selecticon.h3}</h3>
                 <div style={{ display: 'flex', gap: '10px', flex: 1 }}>
-                    <button class="b3-button" onClick={() => setActiveTab('symbols')}>Symbols</button>
-                    <button class="b3-button" onClick={() => setActiveTab('emojis')}>Emojis</button>
+                    {/* <button class="b3-button" onClick={() => setActiveTab('symbols')}>Symbols</button>
+                    <button class="b3-button" onClick={() => setActiveTab('emojis')}>Emojis</button> */}
+                    <Show when={props.show === 'all' || props.show === 'symbols'}>
+                        <button class="b3-button" onClick={() => setActiveTab('symbols')}>Symbols</button>
+                    </Show>
+                    <Show when={props.show === 'all' || props.show === 'emojis'}>
+                        <button class="b3-button" onClick={() => setActiveTab('emojis')}>Emojis</button>
+                    </Show>
                 </div>
                 <button class="b3-button" onClick={() => props.choose({ type: '', value: '' })}>{i18n.selecticon.reset}</button>
             </div>
@@ -79,6 +82,7 @@ const SelectIcons = (props: IProps) => {
 }
 
 export const selectGroupIcon = (param: {
+    show: 'symbols' | 'emojis' | 'all';
     onReset: () => void;
     onUpdate: (icon: { type: 'symbol' | 'emoji' | ''; value: string }) => void;
 }) => {
@@ -95,7 +99,7 @@ export const selectGroupIcon = (param: {
 
     const { close } = solidDialog({
         title: i18n.selecticon.title,
-        loader: () => <SelectIcons choose={chooseIcon} />,
+        loader: () => <SelectIcons choose={chooseIcon} show={param.show} />,
         width: '800px',
         height: '600px'
     });

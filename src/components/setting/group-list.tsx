@@ -1,7 +1,7 @@
 import { createMemo, For } from "solid-js";
 import { groups, setGroups, itemInfo } from "../../model";
 import { moveItem } from "../../libs/op";
-import { GroupIcon } from "./group-icon";
+import { GroupIcon } from "../elements/group-icon";
 
 
 

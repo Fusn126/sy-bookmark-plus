@@ -3,7 +3,7 @@ import { subViews, saveSubViews, groups } from "@/model/stores";
 import { confirmDialog } from "@/libs/dialog";
 import { showMessage } from "siyuan";
 import { inputDialog } from "@frostime/siyuan-plugin-kits";
-import { GroupIcon } from "./group-icon";
+import { GroupIcon } from "../elements/group-icon";
 
 
 const SubViewList: Component = () => {
@@ -137,13 +137,16 @@ const SubViewList: Component = () => {
     }
 
     return (
-        <div style={{
-            display: "flex",
-            "flex-direction": "column",
-            gap: "16px",
-            padding: "16px",
-            "font-size": "14px"
-        }}>
+        <div
+            class="fn__flex fn__flex-1 bookmark-config-group-list"
+            style={{
+                display: "flex",
+                "flex-direction": "column",
+                gap: "16px",
+                padding: "16px",
+                "font-size": "14px"
+            }}
+        >
             <div style={{
                 display: "flex",
                 "align-items": "center",

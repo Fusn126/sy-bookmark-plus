@@ -3,7 +3,7 @@ import { Accessor, createMemo, createSignal, Setter, Show } from "solid-js";
 // import ItemWrap from "@/libs/components/item-wrap";
 // import InputItem from "@/libs/components/item-input";
 import Form from "@/libs/components/Form";
-import Icon from "./icon";
+import Icon from "./elements/icon";
 
 import { i18n } from "@/utils/i18n";
 import { Transition } from "solid-transition-group";
@@ -13,7 +13,7 @@ import { RuleTemplate } from "@/utils/const";
 import { createContext, useContext } from "solid-js";
 
 import { Caret } from "@/utils/const";
-import { selectGroupIcon } from "./select-icon";
+import { selectGroupIcon } from "./elements/select-icon";
 
 const NewGroupContext = createContext<{
     groupType: Accessor<TBookmarkGroupType>;

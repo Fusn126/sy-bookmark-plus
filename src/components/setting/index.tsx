@@ -159,7 +159,11 @@ const App = () => {
     const groups = {
         '🐤 Basic': PanelBasic,
         '📋 GroupList': PanelGroupList,
-        '🗜️ SubViewList': SubViewList
+        '🗜️ SubViewList': () => (
+            <SettingPanel group="SubViewList">
+                <SubViewList></SubViewList>
+            </SettingPanel>
+        )
     }
 
 

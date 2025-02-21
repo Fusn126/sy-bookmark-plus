@@ -20,7 +20,8 @@ import {
     loadConfig,
     loadSubViews,
     saveGroupMap,
-    saveSubViews
+    saveSubViews,
+    subViews
 } from './stores';
 import { getRule } from "./rules";
 import { formatItemTitle } from "./utils";
@@ -116,20 +117,42 @@ export class BookmarkDataModel {
     }
 
     async updateAll() {
-        // TODO 考虑其他 SubView 的需求
-        let toUpdated: Promise<any>[] = [];
+        const gidForUpdate = new Set<TBookmarkGroupId>();
         groups.forEach(group => {
             if (group.hidden) return;
-            if (group.type === 'dynamic') {
-                toUpdated.push(this.updateDynamicGroup(group));
-            }
+            gidForUpdate.add(group.id);
         });
+        // Views
+        for (const views of Object.values(subViews())) {
+            if (views.hidden === true) continue;
+            views.groups.forEach(group => {
+                if (gidForUpdate.has(group)) return;
+                gidForUpdate.add(group);
+            });
+        }
+
+        // Pools
+        const groupToUpdate = [];
+        let toUpdated: Promise<any>[] = [];
+        gidForUpdate.forEach(g => {
+            const group = groupMap().get(g);
+            if (!group) return;
+            groupToUpdate.push(group);
+            toUpdated.push(this.updateDynamicGroup(group));
+        })
+        // groups.forEach(group => {
+        //     if (group.hidden) return;
+        //     if (group.type === 'dynamic') {
+        //         toUpdated.push(this.updateDynamicGroup(group));
+        //     }
+        // });
+
         // 由于是 async 的，所以很遗憾没法使用 batch 更新
         await Promise.all(toUpdated);
         // await this.updateStaticItems();
-        let groupsToUpdate = groups.filter(g => g.hidden !== true);
+        // let groupsToUpdate = groups.filter(g => g.hidden !== true);
         let allIdsSet = new Set<BlockId>();
-        groupsToUpdate.forEach(group => {
+        groupToUpdate.forEach(group => {
             group.items.forEach(item => {
                 allIdsSet.add(item.id);
             });
