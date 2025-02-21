@@ -1,22 +1,8 @@
-import { createMemo, For, Switch, Match } from "solid-js";
+import { createMemo, For } from "solid-js";
 import { groups, setGroups, itemInfo } from "../../model";
 import { moveItem } from "../../libs/op";
+import { GroupIcon } from "./group-icon";
 
-
-const GroupIcon = (props: {
-    groupType?: TBookmarkGroupType
-}) => {
-    return (
-        <Switch fallback={<use href="#iconFolder"></use>}>
-            <Match when={props.groupType === 'normal'}>
-                <use href="#iconFolder"></use>
-            </Match>
-            <Match when={props.groupType === 'dynamic'}>
-                <use href="#iconSearch"></use>
-            </Match>
-        </Switch>
-    )
-}
 
 
 const App = () => {
@@ -73,8 +59,11 @@ const App = () => {
                             gap: '10px',
                             height: '40px',
                             padding: '5px 10px',
-                            'border-radius': '10px',
-                            'box-shadow': '0 0 5px 3px rgba(0, 0, 0, 0.1)'
+                            "border-radius": "6px",
+                            background: "var(--b3-theme-surface)",
+                            border: "1px solid var(--b3-theme-surface-lighter)"
+                            // 'border-radius': '10px',
+                            // 'box-shadow': '0 0 5px 3px rgba(0, 0, 0, 0.1)'
                         }}
                         data-index={i()}
                         data-group-id={group.id}
@@ -85,9 +74,11 @@ const App = () => {
                         onDragOver={onDragover}
                         onDrop={onDrop}
                     >
-                        <svg class="b3-list-item__graphic">
-                            <GroupIcon groupType={group.type}/>
-                        </svg>
+                        {/* <svg class="b3-list-item__graphic">
+                            <GroupIcon group={group}/>
+                        </svg> */}
+                        <GroupIcon group={group}/>
+
                         <span class="b3-list-item__text ariaLabel" data-position="parentE">
                             {group.name}
                         </span>

@@ -3,7 +3,7 @@
  * @Author       : frostime
  * @Date         : 2024-06-12 19:48:53
  * @FilePath     : /src/index.ts
- * @LastEditTime : 2025-02-20 22:06:59
+ * @LastEditTime : 2025-02-21 18:23:11
  * @Description  : 
  */
 import {
@@ -34,6 +34,15 @@ import { enableAutoRefresh } from "./model/auto-refresh";
 
 let model: BookmarkDataModel;
 
+const disposers = {
+    list: [],
+    add: (fn: () => void) => disposers.list.push(fn),
+    disposeAll: () => {
+        disposers.list.forEach(d => d());
+        disposers.list = [];
+    }
+}
+
 const initBookmark = async (ele: HTMLElement, sourceView?: string) => {
     ele.classList.add('fn__flex-column');
 
@@ -42,17 +51,19 @@ const initBookmark = async (ele: HTMLElement, sourceView?: string) => {
         let empty = ele.querySelector('.b3-list--empty') as HTMLElement;
         if (empty) empty.style.display = 'none';
     }
-    render(() => Bookmark({
+    const dispose = render(() => Bookmark({
         //@ts-ignore
         plugin: thisPlugin(),
         model: model,
         sourceView: sourceView ?? 'DEFAULT'
     }), ele);
+    disposers.add(dispose);
     await model.updateAll();
 };
 
 const destroyBookmark = () => {
     rmModel();
+    disposers.disposeAll();
     model = null;
     const ele = document.querySelector('span[data-type="sy-bookmark-plus::dock"]') as HTMLElement;
     ele?.remove();

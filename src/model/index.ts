@@ -116,6 +116,7 @@ export class BookmarkDataModel {
     }
 
     async updateAll() {
+        // TODO 考虑其他 SubView 的需求
         let toUpdated: Promise<any>[] = [];
         groups.forEach(group => {
             if (group.hidden) return;
@@ -355,7 +356,9 @@ export class BookmarkDataModel {
         //6位 36进制
         let id: TBookmarkGroupId;
         while (id === undefined || groupMap().has(id)) {
-            id = Math.random().toString(36).slice(-6);
+            // id = Math.random().toString(36).slice(-6);
+            //@ts-ignore
+            id = window.Lute.NewNodeID();
         }
         let group: IBookmarkGroup = {
             id,

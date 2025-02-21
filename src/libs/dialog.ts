@@ -31,16 +31,15 @@ export const solidDialog = (args: {
     }
 }
 
-interface IConfirmDialogArgs {
+
+export const confirmDialog = (args: {
     title: string;
     content: string | HTMLElement;
     confirm?: (ele?: HTMLElement) => void;
     cancel?: (ele?: HTMLElement) => void;
     width?: string;
     height?: string;
-}
-
-export const confirmDialog = (args: IConfirmDialogArgs) => {
+}) => {
     const { title, content, confirm, cancel, width, height } = args;
 
     const dialog = new Dialog({

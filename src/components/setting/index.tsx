@@ -8,6 +8,7 @@ import { useSignalRef } from "@frostime/solid-signal-ref";
 import { Dynamic } from "solid-js/web";
 import { bookmarkKeymap } from "@/index";
 import { disableAutoRefresh, enableAutoRefresh } from "@/model/auto-refresh";
+import SubViewList from "./sub-view-list";
 
 interface SettingPanelProps {
     group: string;
@@ -157,7 +158,8 @@ const App = () => {
 
     const groups = {
         '🐤 Basic': PanelBasic,
-        '📋 GroupList': PanelGroupList
+        '📋 GroupList': PanelGroupList,
+        '🗜️ SubViewList': SubViewList
     }
 
 

@@ -72,11 +72,9 @@ const BookmarkComponent: Component<{
             const view = subViews()[props.sourceView];
             if (!view) return [];
             let ans = [];
-            // let ans = groups.map(g => view.groups.includes(g.id));
-            for (const g of groups) {
-                if (view.groups.includes(g.id)) {
-                    ans.push(g);
-                }
+            for (const gid of view.groups) {
+                const g = groups.find(g => g.id === gid);
+                if (g) ans.push(g);
             }
             return ans;
         }
