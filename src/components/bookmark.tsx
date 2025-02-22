@@ -1,48 +1,13 @@
 import { Component, For, Show, createMemo, createSignal } from "solid-js";
-import { render } from "solid-js/web";
 import Group from "./group";
 import { confirm, Menu, Plugin, showMessage } from "siyuan";
 import { configs, getModel, groups, subViews } from "../model";
-import { confirmDialog } from "@/libs/dialog";
 
 import { BookmarkContext } from "./context";
 
-import NewGroup from "./new-group";
 
 import { i18n, renderI18n } from "@/utils/i18n";
-
-
-const createNewGroup = (confirmCb: (data: any) => void) => {
-    let container = document.createElement("div") as HTMLDivElement;
-    container.style.display = 'contents';
-
-    const [group, setGroup] = createSignal({ name: "", type: "normal" });
-    const [rule, setRule] = createSignal({ type: "", input: "" });
-    const [icon, setIcon] = createSignal<IBookmarkGroup['icon'] | null>(null);
-
-    render(() => NewGroup({
-        setGroup: (args) => {
-            let current = group();
-            let newval = { ...current, ...args };
-            setGroup(newval);
-        },
-        setRule: (args) => {
-            let current = rule();
-            let newval = { ...current, ...args };
-            setRule(newval);
-        },
-        icon,
-        setIcon
-    }), container);
-    confirmDialog({
-        title: i18n.bookmark.new,
-        content: container,
-        width: '800px',
-        confirm: () => {
-            confirmCb({ group: group(), rule: rule(), icon: icon() });
-        }
-    });
-}
+import { createNewGroup } from "./new-group";
 
 
 /**
@@ -196,18 +161,18 @@ const BookmarkComponent: Component<{
                     {viewName()}
                 </div>
                 <span class="fn__flex-1"></span>
+                <span
+                    data-type="setting"
+                    class="block__icon ariaLabel"
+                    aria-label={I18N.logo.setting}
+                    onClick={props.plugin.openSetting}
+                >
+                    <svg class="">
+                        <use href="#iconSettings"></use>
+                    </svg>
+                </span>
+                <span class="fn__space"></span>
                 <Show when={props.sourceView === "DEFAULT"}>
-                    <span
-                        data-type="setting"
-                        class="block__icon ariaLabel"
-                        aria-label={I18N.logo.setting}
-                        onClick={props.plugin.openSetting}
-                    >
-                        <svg class="">
-                            <use href="#iconSettings"></use>
-                        </svg>
-                    </span>
-                    <span class="fn__space"></span>
                     <span
                         data-type="add"
                         class="block__icon ariaLabel"

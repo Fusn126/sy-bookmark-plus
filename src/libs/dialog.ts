@@ -15,6 +15,7 @@ import { simpleDialog } from "@frostime/siyuan-plugin-kits";
 export const solidDialog = (args: {
     title: string, loader: () => JSXElement,
     width?: string, height?: string,
+    maxWidth?: string, maxHeight?: string,
     callback?: () => void;
 }) => {
     let container = document.createElement('div')

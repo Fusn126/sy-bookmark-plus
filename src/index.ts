@@ -3,7 +3,7 @@
  * @Author       : frostime
  * @Date         : 2024-06-12 19:48:53
  * @FilePath     : /src/index.ts
- * @LastEditTime : 2025-02-22 01:17:11
+ * @LastEditTime : 2025-02-22 17:11:19
  * @Description  : 
  */
 import {
@@ -173,10 +173,13 @@ export default class PluginBookmarkPlus extends Plugin {
 
     openSetting(): void {
         let size = {
-            width: '900px',
-            height: '600px'
-        }
+            width: '1200px',
+            height: '720px',
+            maxWidth: '90%',
+            maxHeight: '90%',
+        };
         if (isMobile()) {
+            //@ts-ignore
             size = {
                 width: '100%',
                 height: '90%'

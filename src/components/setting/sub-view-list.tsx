@@ -188,7 +188,7 @@ const SubViewList: Component = () => {
             style={{
                 display: "flex",
                 "flex-direction": "column",
-                gap: "16px",
+                gap: "10px",
                 padding: "16px",
                 "font-size": "14px"
             }}
@@ -197,7 +197,7 @@ const SubViewList: Component = () => {
                 display: "flex",
                 "align-items": "center",
                 "justify-content": "space-between",
-                "margin-bottom": "16px"
+                "margin-bottom": "8px",
             }}>
                 <span style={{ "font-weight": "600" }}>{i18n.src_components_setting_subviewlisttsx.bookmark_subview}</span>
                 <div
