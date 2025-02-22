@@ -3,7 +3,7 @@
  * @Author       : frostime
  * @Date         : 2025-02-22 00:35:14
  * @FilePath     : /src/dock-views.ts
- * @LastEditTime : 2025-02-22 16:18:40
+ * @LastEditTime : 2025-02-22 16:46:14
  * @Description  : 
  */
 import { render } from "solid-js/web";
@@ -68,7 +68,7 @@ const lazyUpdateModel = {
         if (lazyUpdateModel._hasUpdate === false) {
             lazyUpdateModel._hasUpdate = true;
             const model = getModel();
-            await model.updateAll();
+            await model.updateViews();
         }
     }
 }

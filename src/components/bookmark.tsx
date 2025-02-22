@@ -2,7 +2,7 @@ import { Component, For, Show, createMemo, createSignal } from "solid-js";
 import { render } from "solid-js/web";
 import Group from "./group";
 import { confirm, Menu, Plugin, showMessage } from "siyuan";
-import { type BookmarkDataModel, configs, getModel, groups, subViews } from "../model";
+import { configs, getModel, groups, subViews } from "../model";
 import { confirmDialog } from "@/libs/dialog";
 
 import { BookmarkContext } from "./context";
@@ -96,7 +96,7 @@ const BookmarkComponent: Component<{
 
     const bookmarkRefresh = () => {
         setFnRotate("fn__rotate");
-        model.updateAll().then(() => {
+        model.updateViews(props.sourceView).then(() => {
             setTimeout(() => {
                 setFnRotate("");
             }, 500);
@@ -219,18 +219,18 @@ const BookmarkComponent: Component<{
                         </svg>
                     </span>
                     <span class="fn__space"></span>
-                    <span
-                        data-type="refresh"
-                        class="block__icon ariaLabel"
-                        aria-label={I18N.logo.refresh}
-                        onClick={bookmarkRefresh}
-                    >
-                        <svg class={fnRotate()}>
-                            <use href="#iconRefresh"></use>
-                        </svg>
-                    </span>
-                    <span class="fn__space"></span>
                 </Show>
+                <span
+                    data-type="refresh"
+                    class="block__icon ariaLabel"
+                    aria-label={I18N.logo.refresh}
+                    onClick={bookmarkRefresh}
+                >
+                    <svg class={fnRotate()}>
+                        <use href="#iconRefresh"></use>
+                    </svg>
+                </span>
+                <span class="fn__space"></span>
                 <span
                     data-type="expand"
                     class="block__icon ariaLabel"

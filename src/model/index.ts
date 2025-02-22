@@ -114,20 +114,37 @@ export class BookmarkDataModel {
         }
     }
 
-    async updateAll() {
+    async updateViews(viewId?: 'DEFAULT' | TBookmarkSubViewId) {
         const gidForUpdate = new Set<TBookmarkGroupId>();
-        groups.forEach(group => {
-            if (group.hidden) return;
-            gidForUpdate.add(group.id);
-        });
-        // Views
-        for (const views of Object.values(subViews())) {
-            if (views.hidden === true) continue;
-            views.groups.forEach(group => {
-                if (gidForUpdate.has(group)) return;
-                gidForUpdate.add(group);
+
+        // 如果 viewId 为 undefined，那么更新所有的视图
+        if (viewId === 'DEFAULT' || viewId === undefined) {
+            groups.forEach(group => {
+                if (group.hidden) return;
+                gidForUpdate.add(group.id);
             });
         }
+
+        if (viewId === undefined) {
+            // 更新所有子视图
+            for (const views of Object.values(subViews())) {
+                if (views.hidden === true) continue;
+                views.groups.forEach(group => {
+                    if (gidForUpdate.has(group)) return;
+                    gidForUpdate.add(group);
+                });
+            }
+        } else {
+            // 更新指定的子视图
+            const view = subViews()[viewId];
+            if (view) {
+                view.groups.forEach(group => {
+                    if (gidForUpdate.has(group)) return;
+                    gidForUpdate.add(group);
+                });
+            }
+        }
+
 
         // Pools
         const groupToUpdate = [];
