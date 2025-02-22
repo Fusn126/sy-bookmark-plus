@@ -55,7 +55,14 @@ const BookmarkComponent: Component<{
                 showMessage(i18n.msg.groupNameEmpty, 3000, 'error');
                 return;
             }
-            model.newGroup(group.name, group.type, rule, icon);
+            if (props.sourceView === "DEFAULT") {
+                model.newGroup(group.name, group.type, rule, icon);
+            } else {
+                const newGroup = model.newGroup(group.name, group.type, rule, icon, true);
+                subViews.update(props.sourceView, 'groups', (gs: IBookmarkGroup['id'][]) => {
+                    return [...gs, newGroup.id];
+                });
+            }
         });
     };
 
@@ -172,19 +179,17 @@ const BookmarkComponent: Component<{
                     </svg>
                 </span>
                 <span class="fn__space"></span>
-                <Show when={props.sourceView === "DEFAULT"}>
-                    <span
-                        data-type="add"
-                        class="block__icon ariaLabel"
-                        aria-label={I18N.logo.add}
-                        onClick={groupAdd}
-                    >
-                        <svg class="">
-                            <use href="#iconAdd"></use>
-                        </svg>
-                    </span>
-                    <span class="fn__space"></span>
-                </Show>
+                <span
+                    data-type="add"
+                    class="block__icon ariaLabel"
+                    aria-label={I18N.logo.add}
+                    onClick={groupAdd}
+                >
+                    <svg class="">
+                        <use href="#iconAdd"></use>
+                    </svg>
+                </span>
+                <span class="fn__space"></span>
                 <span
                     data-type="refresh"
                     class="block__icon ariaLabel"

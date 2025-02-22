@@ -3,7 +3,7 @@
  * @Author       : frostime
  * @Date         : 2024-07-07 14:44:03
  * @FilePath     : /src/model/stores.ts
- * @LastEditTime : 2025-02-20 21:12:12
+ * @LastEditTime : 2025-02-22 17:49:12
  * @Description  : 
  */
 import { createStore, unwrap } from "solid-js/store";
@@ -82,7 +82,7 @@ export const configRef = wrapStoreRef(configs, setConfigs);
 const StorageFileConfigs = 'bookmark-configs.json';  //书签插件相关的配置
 const _saveConfig = async () => {
     const data = configRef.unwrap();
-    console.debug('save config', data);
+    // console.debug('save config', data);
     const plugin = thisPlugin();
     await plugin.saveData(StorageFileConfigs, data);
 }

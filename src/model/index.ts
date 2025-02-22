@@ -82,7 +82,7 @@ export class BookmarkDataModel {
     }
 
     private async saveCore(fpath?: string) {
-        console.debug('save bookmarks');
+        // console.debug('save bookmarks');
         await saveGroupMap(fpath);
         await saveSubViews();
         await this.plugin.saveData(StorageFileItemSnapshot, itemInfo);

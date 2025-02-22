@@ -290,7 +290,7 @@ const Group: Component<{
             },
         });
         menu.addSeparator();
-        menu.addItem({
+        context.subViewId === 'DEFAULT' && menu.addItem({
             label: i18n_.move,
             icon: 'iconMove',
             type: 'submenu',
