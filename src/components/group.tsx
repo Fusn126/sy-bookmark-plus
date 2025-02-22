@@ -402,6 +402,11 @@ const Group: Component<{
             event.preventDefault();
             event.dataTransfer.dropEffect = "copy";
             setIsDragOver(true);
+        } else if (event.dataTransfer.types.includes(Constants.SIYUAN_DROP_TAB)) {
+            event.preventDefault();
+            event.dataTransfer.dropEffect = "copy";
+            setIsDragOver(true);
+
         } else if (type === 'bookmark/item') {
             event.preventDefault();
             event.dataTransfer.dropEffect = "move";
@@ -442,6 +447,18 @@ const Group: Component<{
                     item.style.opacity = "1";
                 }
                 window.siyuan.dragElement = undefined;
+            }
+
+        } else if (event.dataTransfer.types.includes(Constants.SIYUAN_DROP_TAB)) {
+            const data = event.dataTransfer.getData(Constants.SIYUAN_DROP_TAB)
+            const payload = JSON.parse(data);
+            const rootId = payload?.children?.rootId;
+            if (rootId) {
+                addItemByBlockId(rootId);
+            }
+            const tab = document.querySelector(`li[data-type="tab-header"][data-id="${payload.id}"]`) as HTMLElement;
+            if (tab) {
+                tab.style.opacity = 'unset';
             }
         } else if (type === 'bookmark/item') {
             model.moveItem(itemMoving());
