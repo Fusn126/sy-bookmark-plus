@@ -2,7 +2,7 @@ import { Component, For, Show, createMemo, createSignal } from "solid-js";
 import { render } from "solid-js/web";
 import Group from "./group";
 import { confirm, Menu, Plugin, showMessage } from "siyuan";
-import { type BookmarkDataModel, configs, groups, subViews } from "../model";
+import { type BookmarkDataModel, configs, getModel, groups, subViews } from "../model";
 import { confirmDialog } from "@/libs/dialog";
 
 import { BookmarkContext } from "./context";
@@ -49,16 +49,18 @@ const createNewGroup = (confirmCb: (data: any) => void) => {
  * Bookmark 组件
  * @param props
  * @param props.plugin
- * @param props.model
+ * @param model
  * @param props.sourceView: 来源, 默认的书签组或者是自定义的书签组视图
  */
 const BookmarkComponent: Component<{
     plugin: Plugin;
-    model: BookmarkDataModel;
+    // model: BookmarkDataModel;
     sourceView: 'DEFAULT' | string;
 }> = (props) => {
 
     const I18N = i18n.bookmark;
+
+    const model = getModel();
 
     const [fnRotate, setFnRotate] = createSignal("");
 
@@ -88,13 +90,13 @@ const BookmarkComponent: Component<{
                 showMessage(i18n.msg.groupNameEmpty, 3000, 'error');
                 return;
             }
-            props.model.newGroup(group.name, group.type, rule, icon);
+            model.newGroup(group.name, group.type, rule, icon);
         });
     };
 
     const bookmarkRefresh = () => {
         setFnRotate("fn__rotate");
-        props.model.updateAll().then(() => {
+        model.updateAll().then(() => {
             setTimeout(() => {
                 setFnRotate("");
             }, 500);
@@ -108,7 +110,7 @@ const BookmarkComponent: Component<{
             i18n.bookmark.delete.desc,
             // "⚠️ 删除后无法恢复！确定删除吗？",
             () => {
-                props.model.delGroup(detail.id)
+                model.delGroup(detail.id)
             }
         );
     };
@@ -144,7 +146,7 @@ const BookmarkComponent: Component<{
         else return;
         if (targetIdx < 0 || targetIdx >= groups.length) return;
 
-        props.model.moveGroup(srcIdx, targetIdx);
+        model.moveGroup(srcIdx, targetIdx);
     };
 
     const bookmarkContextMenu = (e: MouseEvent) => {
@@ -157,7 +159,7 @@ const BookmarkComponent: Component<{
                 const time = new Date();
                 const timeStr = `${time.getFullYear()}-${time.getMonth() + 1}-${time.getDate()} ${time.getHours()}_${time.getMinutes()}_${time.getSeconds()}`;
                 const name = `Cache/bookmarks-${timeStr}.json`;
-                props.model.save(name);
+                model.save(name);
                 showMessage(`${name}`);
             },
         });
@@ -287,7 +289,7 @@ const BookmarkComponent: Component<{
         <BookmarkContext.Provider
             value={{
                 plugin: props.plugin,
-                model: props.model,
+                model: model,
                 subViewId: props.sourceView,
                 shownGroups, doAction
             }}

@@ -7,6 +7,7 @@ import { GroupIcon } from "../elements/group-icon";
 import Icon from "../elements/icon";
 import { selectGroupIcon } from "../elements/select-icon";
 import { SelectInput } from "@/libs/components/Elements";
+import { destroyBookmark } from "@/dock-views";
 
 
 const SubViewList: Component = () => {
@@ -36,7 +37,7 @@ const SubViewList: Component = () => {
                     name: text,
                     groups: [],
                     expand: {},
-                    hidden: false,
+                    hidden: true,
                     dockPosition: 'RightBottom',
                     icon: {
                         type: 'symbol',
@@ -54,6 +55,10 @@ const SubViewList: Component = () => {
             title: "删除书签视图",
             content: "确定要删除该视图吗？",
             confirm: async () => {
+                if (editingView() === viewId) {
+                    setEditingView(null);
+                }
+                destroyBookmark(viewId);
                 subViews.update(viewId, undefined!);
                 await saveSubViews();
             }

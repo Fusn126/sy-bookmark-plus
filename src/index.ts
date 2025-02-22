@@ -3,21 +3,19 @@
  * @Author       : frostime
  * @Date         : 2024-06-12 19:48:53
  * @FilePath     : /src/index.ts
- * @LastEditTime : 2025-02-21 18:23:11
+ * @LastEditTime : 2025-02-22 01:17:11
  * @Description  : 
  */
 import {
     Plugin,
 } from "siyuan";
 
-import { render } from "solid-js/web";
 
 import { solidDialog } from "./libs/dialog";
 
 import { configRef, getModel, rmModel, saveConfig, subViews, type BookmarkDataModel } from "./model";
 import { configs } from "./model";
 
-import Bookmark from "./components/bookmark";
 import Setting from './components/setting';
 
 import { updateStyleDom, removeStyleDom } from "@/utils/style";
@@ -29,45 +27,12 @@ import { isMobile } from "./utils";
 
 import { loadSdk, unloadSdk } from "./sdk";
 
-import { registerPlugin, thisPlugin } from "@frostime/siyuan-plugin-kits";
+import { registerPlugin } from "@frostime/siyuan-plugin-kits";
 import { enableAutoRefresh } from "./model/auto-refresh";
 
+import { destroyAllBookmark, dockViewIconElement, dockViewTypeName, initBookmark } from "./dock-views";
+
 let model: BookmarkDataModel;
-
-const disposers = {
-    list: [],
-    add: (fn: () => void) => disposers.list.push(fn),
-    disposeAll: () => {
-        disposers.list.forEach(d => d());
-        disposers.list = [];
-    }
-}
-
-const initBookmark = async (ele: HTMLElement, sourceView?: string) => {
-    ele.classList.add('fn__flex-column');
-
-    if (isMobile()) {
-        //Refer to https://github.com/frostime/sy-bookmark-plus/issues/13#issuecomment-2283031563
-        let empty = ele.querySelector('.b3-list--empty') as HTMLElement;
-        if (empty) empty.style.display = 'none';
-    }
-    const dispose = render(() => Bookmark({
-        //@ts-ignore
-        plugin: thisPlugin(),
-        model: model,
-        sourceView: sourceView ?? 'DEFAULT'
-    }), ele);
-    disposers.add(dispose);
-    await model.updateAll();
-};
-
-const destroyBookmark = () => {
-    rmModel();
-    disposers.disposeAll();
-    model = null;
-    const ele = document.querySelector('span[data-type="sy-bookmark-plus::dock"]') as HTMLElement;
-    ele?.remove();
-};
 
 
 const useSiyuanBookmarkKeymap = () => {
@@ -132,7 +97,7 @@ export default class PluginBookmarkPlus extends Plugin {
         }
 
         this.addDock({
-            type: '::dock',
+            type: dockViewTypeName('DEFAULT'),
             config: {
                 position: 'RightBottom',
                 size: {
@@ -158,7 +123,7 @@ export default class PluginBookmarkPlus extends Plugin {
                 icon = view.icon.value;
             }
             this.addDock({
-                type: '::sub-view::' + vid,
+                type: dockViewTypeName(vid),
                 config: {
                     position: view.dockPosition ?? 'RightBottom',
                     size: {
@@ -193,7 +158,7 @@ export default class PluginBookmarkPlus extends Plugin {
             langText: 'F-misc Bookmark',
             hotkey: bookmarkKeymap.initial,
             callback: () => {
-                const ele = document.querySelector(`span[data-type="${this.name}::dock"]`) as HTMLElement;
+                const ele = dockViewIconElement('DEFAULT');
                 ele?.click();
             }
         });
@@ -201,7 +166,8 @@ export default class PluginBookmarkPlus extends Plugin {
 
     onunload(): void {
         unloadSdk();
-        destroyBookmark();
+        rmModel();
+        destroyAllBookmark();
         bookmarkKeymap.restoreDefault();
     }
 
