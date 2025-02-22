@@ -8,6 +8,7 @@ import Icon from "../elements/icon";
 import { selectGroupIcon } from "../elements/select-icon";
 import { SelectInput } from "@/libs/components/Elements";
 import { destroyBookmark } from "@/dock-views";
+import { i18n } from "@/utils/i18n";
 
 
 const SubViewList: Component = () => {
@@ -21,13 +22,13 @@ const SubViewList: Component = () => {
 
     const createNewView = () => {
         inputDialog({
-            title: "创建新的书签视图",
+            title: i18n.src_components_setting_subviewlisttsx.create_bookmark_view,
             defaultText: "",
             type: "textline",
             confirm: async (text: string) => {
                 text = text.trim();
                 if (!text) {
-                    showMessage("请输入视图名称");
+                    showMessage(i18n.src_components_setting_subviewlisttsx.enter_view_name);
                     return;
                 }
                 //@ts-ignore
@@ -52,8 +53,8 @@ const SubViewList: Component = () => {
 
     const deleteView = async (viewId: string) => {
         await confirmDialog({
-            title: "删除书签视图",
-            content: "确定要删除该视图吗？",
+            title: i18n.src_components_setting_subviewlisttsx.delete_bookmark_view,
+            content: i18n.src_components_setting_subviewlisttsx.confirm_delete_view,
             confirm: async () => {
                 if (editingView() === viewId) {
                     setEditingView(null);
@@ -198,7 +199,7 @@ const SubViewList: Component = () => {
                 "justify-content": "space-between",
                 "margin-bottom": "16px"
             }}>
-                <span style={{ "font-weight": "600" }}>书签子视图列表</span>
+                <span style={{ "font-weight": "600" }}>{i18n.src_components_setting_subviewlisttsx.bookmark_subview}</span>
                 <div
                     onClick={createNewView}
                     style={{
@@ -212,7 +213,7 @@ const SubViewList: Component = () => {
                     }}
                 >
                     <svg style={{ width: "14px", height: "14px", fill: 'currentcolor' }}><use href="#iconAdd"></use></svg>
-                    <span>新建视图</span>
+                    <span>{i18n.src_components_setting_subviewlisttsx.new_view}</span>
                 </div>
             </div>
 
@@ -264,10 +265,10 @@ const SubViewList: Component = () => {
                                 <SelectInput
                                     value={view.dockPosition ?? "RightBottom"}
                                     options={{
-                                        "LeftTop": "左上",
-                                        "LeftBottom": "左下",
-                                        "RightTop": "右上",
-                                        "RightBottom": "右下"
+                                        "LeftTop": i18n.src_components_setting_subviewlisttsx.top_left,
+                                        "LeftBottom": i18n.src_components_setting_subviewlisttsx.bottom_left,
+                                        "RightTop": i18n.src_components_setting_subviewlisttsx.top_right,
+                                        "RightBottom": i18n.src_components_setting_subviewlisttsx.bottom_right
                                     }}
                                     changed={(value: "RightTop" | "RightBottom" | "LeftTop" | "LeftBottom") => {
                                         subViews.update(view.id, 'dockPosition', value);
@@ -309,7 +310,7 @@ const SubViewList: Component = () => {
                                 "padding-top": "16px",
                                 "border-top": "1px solid var(--b3-theme-surface-lighter)"
                             }}>
-                                <div style={{ "font-weight": "500" }}>当前视图包含的书签组</div>
+                                <div style={{ "font-weight": "500" }}>{i18n.src_components_setting_subviewlisttsx.current_view_bookmarks}</div>
                                 <For each={viewGroups().inViews}>
                                     {(group) => (
                                         <BookmarkGroupItem
@@ -323,7 +324,7 @@ const SubViewList: Component = () => {
                                         />
                                     )}
                                 </For>
-                                <div style={{ "font-weight": "500" }}>其他书签组</div>
+                                <div style={{ "font-weight": "500" }}>{i18n.src_components_setting_subviewlisttsx.other_bookmark_groups}</div>
                                 <For each={viewGroups().notInView}>
                                     {(group) => (
                                         <BookmarkGroupItem

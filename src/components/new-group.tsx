@@ -262,6 +262,7 @@ const NewGroup = (props: IPrpos) => {
 
     const changeGroupIcon = () => {
         selectGroupIcon({
+            show: 'all',
             onReset: () => {
                 props.setIcon(null);
             },

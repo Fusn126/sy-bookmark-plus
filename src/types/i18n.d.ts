@@ -139,6 +139,20 @@ interface I18n {
         refresh_bookmarks: string;
         refresh_groups: string;
     };
+    src_components_setting_subviewlisttsx: {
+        bookmark_subview: string;
+        bottom_left: string;
+        bottom_right: string;
+        confirm_delete_view: string;
+        create_bookmark_view: string;
+        current_view_bookmarks: string;
+        delete_bookmark_view: string;
+        enter_view_name: string;
+        new_view: string;
+        other_bookmark_groups: string;
+        top_left: string;
+        top_right: string;
+    };
     src_model_rulests: {
         js_query_result: string;
     };

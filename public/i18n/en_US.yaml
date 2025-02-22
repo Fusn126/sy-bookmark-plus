@@ -134,6 +134,19 @@ src_components_setting_indextsx:
   refresh_bookmarks: When switching documents, automatically refresh dynamic bookmark
     groups that contain the {{CurDocId}} template variable
   refresh_groups: Refresh when switching documents
+src_components_setting_subviewlisttsx:
+  bookmark_subview: Bookmark Subview List
+  bottom_left: Bottom Left
+  bottom_right: Bottom Right
+  confirm_delete_view: Are you sure you want to delete this view?
+  create_bookmark_view: Create new bookmark view
+  current_view_bookmarks: Bookmark groups in this view
+  delete_bookmark_view: Delete bookmark view
+  enter_view_name: Please enter the view name
+  new_view: New View
+  other_bookmark_groups: Other bookmark groups
+  top_left: Top Left
+  top_right: Top Right
 src_model_rulests:
   js_query_result: The result of the JS query must be a list of blocks/block IDs!
 template:
