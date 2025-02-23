@@ -121,8 +121,11 @@ setting:
 src_components_newgrouptsx:
   query_block_list: 使用 Javascript 代码查询, 返回 Block[] 列表
 src_components_setting_indextsx:
+  all_bookmark_groups: 📋 所有书签组
+  basic_settings: 🐤 基本设置
   refresh_bookmarks: 当切换文档的时候，自动刷新那些含有{{CurDocId}}模板变量的动态书签组
   refresh_groups: 切换文档时刷新相关组
+  subview_management: 🗜️ 子视图管理
 src_components_setting_subviewlisttsx:
   bookmark_subview: 书签子视图列表
   bottom_left: 左下

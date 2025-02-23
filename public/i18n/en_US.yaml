@@ -131,9 +131,12 @@ setting:
 src_components_newgrouptsx:
   query_block_list: Query using Javascript code and return a list of Block[]
 src_components_setting_indextsx:
+  all_bookmark_groups: 📋 Bookmark Groups
+  basic_settings: 🐤 Basic Settings
   refresh_bookmarks: When switching documents, automatically refresh dynamic bookmark
     groups that contain the {{CurDocId}} template variable
   refresh_groups: Refresh when switching documents
+  subview_management: 🗜️ Subviews
 src_components_setting_subviewlisttsx:
   bookmark_subview: Bookmark Subview List
   bottom_left: Bottom Left

@@ -136,8 +136,11 @@ interface I18n {
         query_block_list: string;
     };
     src_components_setting_indextsx: {
+        all_bookmark_groups: string;
+        basic_settings: string;
         refresh_bookmarks: string;
         refresh_groups: string;
+        subview_management: string;
     };
     src_components_setting_subviewlisttsx: {
         bookmark_subview: string;
