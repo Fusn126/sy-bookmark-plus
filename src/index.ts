@@ -3,21 +3,19 @@
  * @Author       : frostime
  * @Date         : 2024-06-12 19:48:53
  * @FilePath     : /src/index.ts
- * @LastEditTime : 2025-02-15 23:58:28
+ * @LastEditTime : 2025-02-22 17:11:19
  * @Description  : 
  */
 import {
     Plugin,
 } from "siyuan";
 
-import { render } from "solid-js/web";
 
 import { solidDialog } from "./libs/dialog";
 
-import { configRef, getModel, rmModel, saveConfig, type BookmarkDataModel } from "./model";
+import { configRef, getModel, rmModel, saveConfig, subViews, type BookmarkDataModel } from "./model";
 import { configs } from "./model";
 
-import Bookmark from "./components/bookmark";
 import Setting from './components/setting';
 
 import { updateStyleDom, removeStyleDom } from "@/utils/style";
@@ -32,29 +30,9 @@ import { loadSdk, unloadSdk } from "./sdk";
 import { registerPlugin } from "@frostime/siyuan-plugin-kits";
 import { enableAutoRefresh } from "./model/auto-refresh";
 
+import { destroyAllBookmark, dockViewIconElement, dockViewTypeName, initBookmark } from "./dock-views";
+
 let model: BookmarkDataModel;
-
-const initBookmark = async (ele: HTMLElement, plugin: PluginBookmarkPlus) => {
-    ele.classList.add('fn__flex-column');
-
-    if (isMobile()) {
-        //Refer to https://github.com/frostime/sy-bookmark-plus/issues/13#issuecomment-2283031563
-        let empty = ele.querySelector('.b3-list--empty') as HTMLElement;
-        if (empty) empty.style.display = 'none';
-    }
-    render(() => Bookmark({
-        plugin: plugin,
-        model: model
-    }), ele);
-    await model.updateAll();
-};
-
-const destroyBookmark = () => {
-    rmModel();
-    model = null;
-    const ele = document.querySelector('span[data-type="sy-bookmark-plus::dock"]') as HTMLElement;
-    ele?.remove();
-};
 
 
 const useSiyuanBookmarkKeymap = () => {
@@ -119,7 +97,7 @@ export default class PluginBookmarkPlus extends Plugin {
         }
 
         this.addDock({
-            type: '::dock',
+            type: dockViewTypeName('DEFAULT'),
             config: {
                 position: 'RightBottom',
                 size: {
@@ -134,9 +112,36 @@ export default class PluginBookmarkPlus extends Plugin {
                 initBookmark: initBookmark,
             },
             init() {
-                this.data.initBookmark(this.element, this.data.plugin);
+                this.data.initBookmark(this.element, 'DEFAULT');
             }
         });
+
+        for (let [vid, view] of Object.entries(subViews())) {
+            if (view.hidden === true) continue;
+            let icon = 'iconEmoji';
+            if (view.icon?.type === 'symbol') {
+                icon = view.icon.value;
+            }
+            this.addDock({
+                type: dockViewTypeName(vid),
+                config: {
+                    position: view.dockPosition ?? 'RightBottom',
+                    size: {
+                        width: 200,
+                        height: 200,
+                    },
+                    icon: icon,
+                    title: view.name || 'Bookmark+'
+                },
+                data: {
+                    plugin: this,
+                    initBookmark: initBookmark,
+                },
+                init() {
+                    this.data.initBookmark(this.element, vid);
+                }
+            });
+        }
 
         // useSdk(this);
         loadSdk();
@@ -153,7 +158,7 @@ export default class PluginBookmarkPlus extends Plugin {
             langText: 'F-misc Bookmark',
             hotkey: bookmarkKeymap.initial,
             callback: () => {
-                const ele = document.querySelector(`span[data-type="${this.name}::dock"]`) as HTMLElement;
+                const ele = dockViewIconElement('DEFAULT');
                 ele?.click();
             }
         });
@@ -161,16 +166,20 @@ export default class PluginBookmarkPlus extends Plugin {
 
     onunload(): void {
         unloadSdk();
-        destroyBookmark();
+        rmModel();
+        destroyAllBookmark();
         bookmarkKeymap.restoreDefault();
     }
 
     openSetting(): void {
         let size = {
-            width: '900px',
-            height: '600px'
-        }
+            width: '1200px',
+            height: '720px',
+            maxWidth: '90%',
+            maxHeight: '90%',
+        };
         if (isMobile()) {
+            //@ts-ignore
             size = {
                 width: '100%',
                 height: '90%'

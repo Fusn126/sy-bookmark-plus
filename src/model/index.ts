@@ -1,5 +1,3 @@
-import { unwrap } from "solid-js/store";
-
 import type PluginBookmarkPlus from "@/index";
 
 import { getBlocks, getDocInfos } from "./data";
@@ -16,11 +14,12 @@ import {
     setItemInfo,
     setGroups,
     groupMap,
-    configs,
-    setConfigs,
     groups,
     loadConfig,
-    saveGroupMap
+    loadSubViews,
+    saveGroupMap,
+    saveSubViews,
+    subViews
 } from './stores';
 import { getRule } from "./rules";
 import { formatItemTitle } from "./utils";
@@ -42,6 +41,7 @@ export class BookmarkDataModel {
         let bookmarks = await this.plugin.loadData(StorageNameBookmarks + '.json') as { [key: TBookmarkGroupId]: IBookmarkGroup };
         // let configs_ = await this.plugin.loadData(StorageFileConfigs);
         await loadConfig();
+        await loadSubViews();
         let snapshot: { [key: BlockId]: IBookmarkItemInfo } = await this.plugin.loadData(StorageFileItemSnapshot);
 
         // if (configs_) {
@@ -82,8 +82,9 @@ export class BookmarkDataModel {
     }
 
     private async saveCore(fpath?: string) {
-        console.debug('save bookmarks');
+        // console.debug('save bookmarks');
         await saveGroupMap(fpath);
+        await saveSubViews();
         await this.plugin.saveData(StorageFileItemSnapshot, itemInfo);
     }
 
@@ -113,20 +114,60 @@ export class BookmarkDataModel {
         }
     }
 
-    async updateAll() {
-        let toUpdated: Promise<any>[] = [];
-        groups.forEach(group => {
-            if (group.hidden) return;
-            if (group.type === 'dynamic') {
-                toUpdated.push(this.updateDynamicGroup(group));
+    async updateViews(viewId?: 'DEFAULT' | TBookmarkSubViewId) {
+        const gidForUpdate = new Set<TBookmarkGroupId>();
+
+        // 如果 viewId 为 undefined，那么更新所有的视图
+        if (viewId === 'DEFAULT' || viewId === undefined) {
+            groups.forEach(group => {
+                if (group.hidden) return;
+                gidForUpdate.add(group.id);
+            });
+        }
+
+        if (viewId === undefined) {
+            // 更新所有子视图
+            for (const views of Object.values(subViews())) {
+                if (views.hidden === true) continue;
+                views.groups.forEach(group => {
+                    if (gidForUpdate.has(group)) return;
+                    gidForUpdate.add(group);
+                });
             }
-        });
+        } else {
+            // 更新指定的子视图
+            const view = subViews()[viewId];
+            if (view) {
+                view.groups.forEach(group => {
+                    if (gidForUpdate.has(group)) return;
+                    gidForUpdate.add(group);
+                });
+            }
+        }
+
+
+        // Pools
+        const groupToUpdate = [];
+        let toUpdated: Promise<any>[] = [];
+        gidForUpdate.forEach(g => {
+            const group = groupMap().get(g);
+            if (!group) return;
+            groupToUpdate.push(group);
+            toUpdated.push(this.updateDynamicGroup(group));
+        })
+        // groups.forEach(group => {
+        //     if (group.hidden) return;
+        //     if (group.type === 'dynamic') {
+        //         toUpdated.push(this.updateDynamicGroup(group));
+        //     }
+        // });
+
         // 由于是 async 的，所以很遗憾没法使用 batch 更新
         await Promise.all(toUpdated);
         // await this.updateStaticItems();
-        let groupsToUpdate = groups.filter(g => g.hidden !== true);
+        // let groupsToUpdate = groups.filter(g => g.hidden !== true);
         let allIdsSet = new Set<BlockId>();
-        groupsToUpdate.forEach(group => {
+        groupToUpdate.forEach(group => {
             group.items.forEach(item => {
                 allIdsSet.add(item.id);
             });
@@ -349,11 +390,13 @@ export class BookmarkDataModel {
         }
     }
 
-    newGroup(name: string, type?: TBookmarkGroupType, rule?: IDynamicRule, icon?: IBookmarkGroup['icon']) {
+    newGroup(name: string, type?: TBookmarkGroupType, rule?: IDynamicRule, icon?: IBookmarkGroup['icon'], hidden?: boolean) {
         //6位 36进制
         let id: TBookmarkGroupId;
         while (id === undefined || groupMap().has(id)) {
-            id = Math.random().toString(36).slice(-6);
+            // id = Math.random().toString(36).slice(-6);
+            //@ts-ignore
+            id = window.Lute.NewNodeID();
         }
         let group: IBookmarkGroup = {
             id,
@@ -361,7 +404,8 @@ export class BookmarkDataModel {
             items: [],
             type,
             rule,
-            icon: icon ?? null
+            icon: icon ?? null,
+            hidden: hidden ?? false
         };
 
         setGroups((gs) => [...gs, group]);

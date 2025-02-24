@@ -1,25 +1,19 @@
-import { createMemo, For, Switch, Match } from "solid-js";
-import { groups, setGroups, itemInfo } from "../../model";
+import { createMemo, For } from "solid-js";
+import { groups, setGroups, itemInfo, getModel } from "../../model";
 import { moveItem } from "../../libs/op";
-
-
-const GroupIcon = (props: {
-    groupType?: TBookmarkGroupType
-}) => {
-    return (
-        <Switch fallback={<use href="#iconFolder"></use>}>
-            <Match when={props.groupType === 'normal'}>
-                <use href="#iconFolder"></use>
-            </Match>
-            <Match when={props.groupType === 'dynamic'}>
-                <use href="#iconSearch"></use>
-            </Match>
-        </Switch>
-    )
-}
-
+import { GroupIcon } from "../elements/group-icon";
+import { selectGroupIcon } from "../elements/select-icon";
+import { confirm, showMessage } from "siyuan";
+import inputDialog from '@/libs/components/input-dialog';
+import { i18n } from "@/utils/i18n";
+import Icon from "../elements/icon";
+import { CheckboxInput } from "@/libs/components/Elements";
+import { createNewGroup } from "../new-group";
 
 const App = () => {
+
+    const model = getModel();
+    const i18n_ = i18n.group;
 
     let Counts = createMemo(() => {
         let Cnt: { [key: string]: { indexed: number, closed: number, deleted: number } } = {};
@@ -54,6 +48,18 @@ const App = () => {
         setGroups((groups) => moveItem(groups, from, to));
     };
 
+    const groupAdd = () => {
+        createNewGroup((result: { group: {name: string, type?: TBookmarkGroupType }, rule: any, icon?: IBookmarkGroup['icon'] }) => {
+            // console.log(result);
+            let { group, rule, icon } = result;
+            if (group.name === "") {
+                showMessage(i18n.msg.groupNameEmpty, 3000, 'error');
+                return;
+            }
+            model.newGroup(group.name, group.type, rule, icon, true);
+        });
+    };
+
     return (
         <section
             class="fn__flex fn__flex-1 bookmark-config-group-list"
@@ -65,16 +71,47 @@ const App = () => {
                 'flex-direction': 'column'
             }}
         >
+
+            <div style={{
+                display: "flex",
+                "align-items": "center",
+                "justify-content": "space-between",
+                "margin-bottom": "8px",
+                padding: '0px 8px'
+            }}>
+                <span style={{ "font-weight": "600" }}>
+                    {i18n.setting.grouplist.title}
+                </span>
+                <div
+                    onClick={(e) => { e.stopPropagation(); groupAdd() }}
+                    style={{
+                        cursor: "pointer",
+                        padding: "4px 8px",
+                        "border-radius": "4px",
+                        background: "var(--b3-theme-background-light)",
+                        display: "flex",
+                        "align-items": "center",
+                        gap: "4px"
+                    }}
+                >
+                    <svg style={{ width: "14px", height: "14px", fill: 'currentcolor' }}><use href="#iconAdd"></use></svg>
+                    <span>{i18n.bookmark.logo.add}</span>
+                </div>
+            </div>
+
             <For each={groups}>
                 {(group, i) => (
                     <li
                         class="bookmark-group b3-list-item"
                         style={{
-                            gap: '10px',
+                            gap: '12px',
                             height: '40px',
                             padding: '5px 10px',
-                            'border-radius': '10px',
-                            'box-shadow': '0 0 5px 3px rgba(0, 0, 0, 0.1)'
+                            "border-radius": "6px",
+                            background: "var(--b3-theme-surface)",
+                            border: "1px solid var(--b3-theme-surface-lighter)",
+                            display: "flex",
+                            "align-items": "center"
                         }}
                         data-index={i()}
                         data-group-id={group.id}
@@ -85,9 +122,25 @@ const App = () => {
                         onDragOver={onDragover}
                         onDrop={onDrop}
                     >
-                        <svg class="b3-list-item__graphic">
-                            <GroupIcon groupType={group.type}/>
-                        </svg>
+                        {/* <svg class="b3-list-item__graphic">
+                            <GroupIcon group={group}/>
+                        </svg> */}
+                        <span style={{ display: 'contents' }} onClick={(e: MouseEvent) => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            selectGroupIcon({
+                                show: 'all',
+                                onReset: () => {
+                                    model.setGroups(group.id, 'icon', null);
+                                },
+                                onUpdate: (icon) => {
+                                    model.setGroups(group.id, 'icon', icon);
+                                }
+                            })
+                        }}>
+                            <GroupIcon group={group} />
+                        </span>
+
                         <span class="b3-list-item__text ariaLabel" data-position="parentE">
                             {group.name}
                         </span>
@@ -102,7 +155,7 @@ const App = () => {
                             {Counts()[group.id].deleted}
                         </span>
                         <span class="fn__space" />
-                        <div class="fn__flex fn__flex-center">
+                        {/* <div class="fn__flex fn__flex-center">
                             <input
                                 class="b3-switch fn__flex-center"
                                 checked={group.hidden === true ? false : true}
@@ -111,12 +164,55 @@ const App = () => {
                                     setGroups((g) => g.id === group.id, 'hidden', (hidden) => !hidden);
                                 }}
                             />
-                        </div>
+                        </div> */}
+                        <span style={{ display: 'contents' }}>
+                            <CheckboxInput
+                                checked={group.hidden === true ? false : true}
+                                changed={() => {
+                                    setGroups((g) => g.id === group.id, 'hidden', (hidden) => !hidden);
+                                }}
+                            />
+                        </span>
+
+                        <span
+                            onClick={() => {
+                                inputDialog({
+                                    title: i18n_.rename,
+                                    defaultText: group.name,
+                                    width: "500px",
+                                    type: 'textline',
+                                    confirm: (title: string) => {
+                                        if (title) {
+                                            model.renameGroup(group.id, title.trim());
+                                        }
+                                    }
+                                });
+                            }}
+                            style={{ cursor: "pointer", display: 'flex' }}
+                        >
+                            <Icon symbol="iconEdit" />
+                        </span>
+
+                        <span
+                            onClick={() => {
+                                confirm(
+                                    i18n_.delete,
+                                    `Remove "${group.name}"?`,
+                                    () => {
+                                        // model.removeGroup(group.id);
+                                        model.delGroup(group.id);
+                                    }
+                                );
+                            }}
+                            style={{ cursor: "pointer", display: 'flex' }}
+                        >
+                            <Icon symbol="iconTrashcan" />
+                        </span>
                     </li>
                 )}
             </For>
         </section>
-    )
-}
+    );
+};
 
 export default App;

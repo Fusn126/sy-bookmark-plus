@@ -5,8 +5,9 @@ import { type BookmarkDataModel } from "../model";
 interface IBookmarkContext {
     plugin: Plugin;
     model: BookmarkDataModel;
-    shownGroups: Accessor<IBookmarkGroup[]>
-    doAction: Accessor<string>
+    shownGroups: Accessor<IBookmarkGroup[]>;
+    doAction: Accessor<string>;
+    subViewId: TBookmarkSubViewId | 'DEFAULT';
 }
 
 export const BookmarkContext = createContext<IBookmarkContext>();

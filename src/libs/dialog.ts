@@ -15,6 +15,7 @@ import { simpleDialog } from "@frostime/siyuan-plugin-kits";
 export const solidDialog = (args: {
     title: string, loader: () => JSXElement,
     width?: string, height?: string,
+    maxWidth?: string, maxHeight?: string,
     callback?: () => void;
 }) => {
     let container = document.createElement('div')
@@ -31,16 +32,15 @@ export const solidDialog = (args: {
     }
 }
 
-interface IConfirmDialogArgs {
+
+export const confirmDialog = (args: {
     title: string;
     content: string | HTMLElement;
     confirm?: (ele?: HTMLElement) => void;
     cancel?: (ele?: HTMLElement) => void;
     width?: string;
     height?: string;
-}
-
-export const confirmDialog = (args: IConfirmDialogArgs) => {
+}) => {
     const { title, content, confirm, cancel, width, height } = args;
 
     const dialog = new Dialog({

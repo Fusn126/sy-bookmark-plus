@@ -18,6 +18,7 @@ code_files:
 - './src/**/*.tsx'
 dict:
   - 思源 -> SiYuan
+  - 视图 -> View
 export_dir: src/types
 i18n_dir: public/i18n
 i18n_pattern: \(\(`(.+?)`\)\)

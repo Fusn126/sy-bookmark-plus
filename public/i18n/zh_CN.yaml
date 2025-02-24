@@ -121,8 +121,24 @@ setting:
 src_components_newgrouptsx:
   query_block_list: 使用 Javascript 代码查询, 返回 Block[] 列表
 src_components_setting_indextsx:
+  all_bookmark_groups: 📋 所有书签组
+  basic_settings: 🐤 基本设置
   refresh_bookmarks: 当切换文档的时候，自动刷新那些含有{{CurDocId}}模板变量的动态书签组
   refresh_groups: 切换文档时刷新相关组
+  subview_management: 🗜️ 子视图管理
+src_components_setting_subviewlisttsx:
+  bookmark_subview: 书签子视图列表
+  bottom_left: 左下
+  bottom_right: 右下
+  confirm_delete_view: 确定要删除该视图吗？
+  create_bookmark_view: 创建新的书签视图
+  current_view_bookmarks: 当前视图包含的书签组
+  delete_bookmark_view: 删除书签视图
+  enter_view_name: 请输入视图名称
+  new_view: 新建视图
+  other_bookmark_groups: 其他书签组
+  top_left: 左上
+  top_right: 右上
 src_model_rulests:
   js_query_result: JS 查询返回结果必须是块/块ID的列表!
 template:

@@ -1,4 +1,12 @@
 /*
+ * Copyright (c) 2025 by frostime. All Rights Reserved.
+ * @Author       : frostime
+ * @Date         : 2024-08-26 16:50:18
+ * @FilePath     : /src/types/index.d.ts
+ * @LastEditTime : 2025-02-20 18:45:42
+ * @Description  : 
+ */
+/*
  * Copyright (c) 2024 by frostime. All Rights Reserved.
  * @Author       : frostime
  * @Date         : 2024-03-19 14:07:28

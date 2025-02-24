@@ -18,7 +18,7 @@ export default function CheckboxInput(props: ICheckboxInputProps) {
             {...attrStyle()}
             type="checkbox"
             checked={props.checked}
-            onInput={(e) => {
+            onChange={(e) => {
                 props.changed?.(e.currentTarget.checked);
             }}
         />

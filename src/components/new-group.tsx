@@ -3,7 +3,7 @@ import { Accessor, createMemo, createSignal, Setter, Show } from "solid-js";
 // import ItemWrap from "@/libs/components/item-wrap";
 // import InputItem from "@/libs/components/item-input";
 import Form from "@/libs/components/Form";
-import Icon from "./icon";
+import Icon from "./elements/icon";
 
 import { i18n } from "@/utils/i18n";
 import { Transition } from "solid-transition-group";
@@ -13,7 +13,9 @@ import { RuleTemplate } from "@/utils/const";
 import { createContext, useContext } from "solid-js";
 
 import { Caret } from "@/utils/const";
-import { selectGroupIcon } from "./select-icon";
+import { selectGroupIcon } from "./elements/select-icon";
+import { confirmDialog } from "@frostime/siyuan-plugin-kits";
+import { render } from "solid-js/web";
 
 const NewGroupContext = createContext<{
     groupType: Accessor<TBookmarkGroupType>;
@@ -240,14 +242,12 @@ const RuleEditor = () => {
 }
 
 
-interface IPrpos {
+export const NewGroup = (props: {
     setGroup: (arg: { name?: string, type?: TBookmarkGroupType }) => void;
     setRule: (arg: { type?: string, input?: string }) => void;
     icon: Accessor<IBookmarkGroup['icon']>;
     setIcon: (args: IBookmarkGroup['icon']) => void;
-}
-
-const NewGroup = (props: IPrpos) => {
+}) => {
     // let grouptype = 'normal';
     const i18n_ = i18n.newgroup;
 
@@ -262,6 +262,7 @@ const NewGroup = (props: IPrpos) => {
 
     const changeGroupIcon = () => {
         selectGroupIcon({
+            show: 'all',
             onReset: () => {
                 props.setIcon(null);
             },
@@ -364,4 +365,34 @@ const NewGroup = (props: IPrpos) => {
     )
 }
 
-export default NewGroup;
+export const createNewGroup = (confirmCb: (data: any) => void) => {
+    let container = document.createElement("div") as HTMLDivElement;
+    container.style.display = 'contents';
+
+    const [group, setGroup] = createSignal({ name: "", type: "normal" });
+    const [rule, setRule] = createSignal({ type: "", input: "" });
+    const [icon, setIcon] = createSignal<IBookmarkGroup['icon'] | null>(null);
+
+    render(() => NewGroup({
+        setGroup: (args) => {
+            let current = group();
+            let newval = { ...current, ...args };
+            setGroup(newval);
+        },
+        setRule: (args) => {
+            let current = rule();
+            let newval = { ...current, ...args };
+            setRule(newval);
+        },
+        icon,
+        setIcon
+    }), container);
+    confirmDialog({
+        title: i18n.bookmark.new,
+        content: container,
+        width: '800px',
+        confirm: () => {
+            confirmCb({ group: group(), rule: rule(), icon: icon() });
+        }
+    });
+}

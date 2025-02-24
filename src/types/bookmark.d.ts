@@ -1,12 +1,15 @@
 /*
- * Copyright (c) 2024 by frostime. All Rights Reserved.
+ * Copyright (c) 2025 by frostime. All Rights Reserved.
  * @Author       : frostime
- * @Date         : 2024-05-20 18:54:29
+ * @Date         : 2024-12-15 23:01:47
  * @FilePath     : /src/types/bookmark.d.ts
- * @LastEditTime : 2024-10-03 17:06:24
+ * @LastEditTime : 2025-02-21 22:53:37
  * @Description  : 
  */
+/// <reference types="siyuan" />
+
 type TBookmarkGroupId = string;
+type TBookmarkSubViewId = string;
 
 interface IBookmarkItem {
     id: BlockId;
@@ -15,7 +18,6 @@ interface IBookmarkItem {
     box: NotebookId;
     subtype: BlockSubType | '';
 }
-
 
 /**
  * Bookmark item 的 svelte 组件需要的信息
@@ -48,8 +50,25 @@ interface IBookmarkGroup {
     type?: TBookmarkGroupType;
     rule?: IDynamicRule;
     icon?: {
-        type: 'symbol' | 'emoji' | ''; value: string;
+        type: 'symbol' | 'emoji' | '';
+        value: string;
     }
+}
+
+/**
+ * 由多个 group 组成的 view
+ */
+interface IBookmarkSubView {
+    id: TBookmarkSubViewId;
+    name: string;
+    hidden?: boolean; // View 本身是否需要加入到 Dock 当中
+    icon?: {
+        type: 'symbol' | 'emoji' | '';
+        value: string;  // Dock 的 Icon
+    };
+    groups: TBookmarkGroupId[];  //内部包含的 Group
+    expand: Record<TBookmarkGroupId, boolean>;
+    dockPosition?: 'RightTop' | 'RightBottom' | 'LeftTop' | 'LeftBottom';
 }
 
 

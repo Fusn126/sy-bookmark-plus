@@ -3,13 +3,13 @@
  * @Author       : frostime
  * @Date         : 2024-07-07 14:44:03
  * @FilePath     : /src/model/stores.ts
- * @LastEditTime : 2025-02-16 00:05:34
+ * @LastEditTime : 2025-02-22 17:49:12
  * @Description  : 
  */
 import { createStore, unwrap } from "solid-js/store";
 
 import { createMemo } from "solid-js";
-import { wrapStoreRef } from "@frostime/solid-signal-ref";
+import { createStoreRef, wrapStoreRef } from "@frostime/solid-signal-ref";
 import { debounce, thisPlugin } from "@frostime/siyuan-plugin-kits";
 
 export const [itemInfo, setItemInfo] = createStore<{ [key: BlockId]: IBookmarkItemInfo }>({});
@@ -18,6 +18,22 @@ export const [groups, setGroups] = createStore<IBookmarkGroup[]>([]);
 export const groupMap = createMemo<Map<TBookmarkGroupId, IBookmarkGroup & { index: number }>>(() => {
     return new Map(groups.map((group, index) => [group.id, { ...group, index: index }]));
 });
+
+
+
+const StorageNameGroupViews = 'bookmark-sub-views';
+export const subViews = createStoreRef<{ [key: TBookmarkSubViewId]: IBookmarkSubView }>({});
+
+export const loadSubViews = async () => {
+    let views: { [key: TBookmarkSubViewId]: IBookmarkSubView } = await thisPlugin().loadData(StorageNameGroupViews + '.json');
+    if (views) {
+        subViews.update(views);
+    }
+}
+
+export const saveSubViews = async () => {
+    await thisPlugin().saveData(StorageNameGroupViews + '.json', subViews.unwrap());
+}
 
 const StorageNameBookmarks = 'bookmarks';  //书签
 const _saveGroupMap = async (fpath?: string) => {
@@ -66,7 +82,7 @@ export const configRef = wrapStoreRef(configs, setConfigs);
 const StorageFileConfigs = 'bookmark-configs.json';  //书签插件相关的配置
 const _saveConfig = async () => {
     const data = configRef.unwrap();
-    console.debug('save config', data);
+    // console.debug('save config', data);
     const plugin = thisPlugin();
     await plugin.saveData(StorageFileConfigs, data);
 }

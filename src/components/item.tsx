@@ -12,7 +12,6 @@ import { i18n, renderI18n } from "@/utils/i18n";
 import { simpleDialog } from "@frostime/siyuan-plugin-kits";
 import Typography from "@/libs/components/typography";
 import { getNotebook, isMobile } from "@/utils";
-import { getBlockByID } from "@/api";
 
 interface IProps {
     group: TBookmarkGroupId;
