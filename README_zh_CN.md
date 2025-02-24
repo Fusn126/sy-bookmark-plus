@@ -38,7 +38,7 @@
 
     * 关于 Javascript 查询，详细请阅读后面的说明
 
-​![](asset/newgroup.png)​
+​![](asset/network-asset-newgroup-20250224163102-yxtbjee.png)​
 
 ### Javascript 查询
 
@@ -76,12 +76,17 @@ return todo.sorton('created', 'desc');
 在静态书签组当中，你可以通过这几种方法添加书签项目：
 
 1. 编辑器块拖放：在编辑器中，直接将块的图标拖入书签组内
-2. 书签组右键菜单中添加：
+
+    ​![PixPin_2025-02-24_16-24-58](asset/PixPin_2025-02-24_16-24-58-20250224162502-2pb1vek.gif)​
+2. Tab 标签页拖放：可以直接将当前编辑的文档的页签拖放到书签组中
+
+    ​![PixPin_2025-02-24_16-23-14](asset/PixPin_2025-02-24_16-23-14-20250224162327-aune87y.gif)​
+3. 书签组右键菜单中添加：
 
     1. 从剪贴板中添加：你可以复制一个块的 ID、引用、链接，插件会自动识别并将其添加到书签组中
     2. 添加当前文档块：会将当前正在编辑的文档添加到书签组中
 
-​![](asset/add.gif)​
+​![](asset/network-asset-add-20250224163102-tk8xq0q.gif)​
 
 ### 动态组
 
@@ -90,7 +95,7 @@ return todo.sorton('created', 'desc');
 1. 全局更新：点击顶栏的更新按钮，更新所有的书签组
 2. 右键菜单：点击动态组右键菜单，重新在当前组中执行查询，并获取最新的书签项目
 
-​![](asset/dynamic-group.gif)​
+​![](asset/network-asset-dynamic-group-20250224163102-ffy80ur.gif)​
 
 ### 变量渲染
 
@@ -133,27 +138,37 @@ custom-dailynote-% like {{yyyy}}{{MM}}%
 * 点击项目，跳转对应的块
 * 悬浮在块标上，可以预览块的内容
 
-  ​![](asset/hover.png)​
+  ​![](asset/network-asset-hover-20250224163102-davt9l3.png)​
 * 拖放调整书签位置
 
-  ​![](asset/drag-move.gif)​
+  ​![](asset/network-asset-drag-move-20250224163102-bnlixnm.gif)​
 * 右键菜单中支持更多功能~
 
-  ​![](asset/contextmenu.png)​
+  ​![](asset/network-asset-contextmenu-20250224163102-4bdvkio.png)​
+
+## 书签子视图 (2.0 版)
+
+2.0版本引入新功能**多书签子视图**，用于解决书签组堆积导致的侧栏拥挤问题。现在您可以：
+
+1. 通过设置 →「子视图管理」新建独立侧边栏
+    ![子视图管理界面](asset/image-20250224151916-xv15iit.png)​
+2. 自由分配书签组到不同视图：每个子视图可包含任意数量的书签组  
+    ​![书签组分配](asset/image-20250224152016-qhbpwoz.png)​
+3. 重启后自动固定到独立Dock栏
 
 ## 插件设置
 
-​![](asset/setting.png)​
+​![](asset/network-asset-setting-20250224163102-i5isr18.png)​
 
 * 替换内置书签：如果开启，在插件在启动的时候会自动屏蔽默认的思源书签，并且覆盖书签的快捷键（默认为 Alt + 3）
 * 展示样式：插件提供了两种样式
 
   * 书签样式：和思源内置的书签一致
 
-    ​![](asset/bookmark-view.png)​
+    ​![](asset/network-asset-bookmark-view-20250224163102-f6jk210.png)​
   * 卡片样式：各个书签组以卡片的样式呈现
 
-    ​![](asset/card-view.png)​
+    ​![](asset/network-asset-card-view-20250224163102-01ggsfs.png)​
 * 隐藏项目：书签项目可能由于被删除、或者块所在的笔记本被关闭而无法被索引到
 
   * 隐藏关闭项目：开启后，隐藏那些来自被关闭的笔记本中的项目
@@ -221,7 +236,7 @@ custom-dailynote-% like {{yyyy}}{{MM}}%
 
 **容器首个子块** 的含义是：如果查询到的块为某个容器块的第一个段落子块，那么我们将视为查询到容器块本身。
 
-​![](https://b3logfile.com/file/2024/05/siyuan/1646569891270/assets/image-20240506185002-bcpih90.png?imageView2/2/interlace/1/format/webp)​
+​![](asset/network-asset-image-20240506185002-bcpih90.png)​
 
 这里举一个例子：在某个列表项当中引用了 `文档X`​。
 
@@ -267,6 +282,6 @@ custom-dailynote-% like {{yyyy}}{{MM}}%
 
 > 注: 在移动端中将无法替换内置的书签功能，只能通过插件面板单独打。
 
-​![](asset/mobile.png)​
+​![](asset/network-asset-mobile-20250224163102-x64c6vo.png)​
 
 不过由于插件开发在桌面端上，所以移动端中有些操作可能会有些不方便。

@@ -75,7 +75,10 @@ return todo.sorton('created', 'desc');
 In a static bookmark group, you can add bookmark items through the following methods:
 
 1. Editor Block Drag-and-Drop: In the editor, directly drag the block icon into the bookmark group
-2. Right-click Menu of the Bookmark Group:
+2. Tab Drag-and-Drop: You can directly drag the tab of the currently edited document into the bookmark group.
+
+    ​![](asset/PixPin_2025-02-24_16-23-14-20250224162327-aune87y.gif)​
+3. Right-click Menu of the Bookmark Group:
 
     1. Add from Clipboard: You can copy a block's ID, reference, or link, and the plugin will automatically recognize and add it to the bookmark group
     2. Add Current Document Block: Adds the currently edited document to the bookmark group
@@ -139,6 +142,16 @@ You can enable the "**Refresh when switching documents**" feature in the bookmar
 * More features are available in the right-click menu~
 
   ​![](asset/contextmenu.png)​
+
+## Bookmark Sub Views (version 2.0)
+
+Version 2.0 introduces a new feature called **Bookmark Sub Views**, designed to address the issue of sidebar clutter caused by stacked bookmark groups. Now you can:
+
+1. Create an independent sidebar by going to Settings → "Sub View Management."  
+    ​![Sub View Management Interface](asset/image-20250224151916-xv15iit.png)​
+2. Freely assign bookmark groups to different views: Each sub-view can contain numbers of bookmark groups
+    ![Bookmark Group Assignment](asset/image-20250224152016-qhbpwoz.png)​
+3. The view will be fixed to an independent Dock panel after restart SiYuan.
 
 ## Plugin Settings
 
@@ -266,6 +279,6 @@ However, if the user enables the "First child of container" post-processing sche
 
 > Note: On mobile devices, it will not be possible to replace the built-in bookmark functionality. It can only be accessed separately through the plugin panel.
 
-​![](asset/mobile.png)​
+​![](asset/network-asset-mobile-20250224163102-x64c6vo.png)​
 
 However, since plugin development is done on the desktop, some operations on mobile devices may be less convenient.
