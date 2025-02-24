@@ -3,7 +3,7 @@
  * @Author       : frostime
  * @Date         : 2024-05-21 20:25:51
  * @FilePath     : /src/libs/dom.ts
- * @LastEditTime : 2024-09-14 22:49:38
+ * @LastEditTime : 2025-02-24 14:50:21
  * @Description  : 
  */
 import { NodeIcons, BlockType2NodeType } from "@/utils/const";
@@ -21,12 +21,23 @@ export const parseEmoji = (code: string) => {
     return String.fromCodePoint(codePoint);
 }
 
+
+export const buildDocIcon = (code: string) => {
+    if (code.startsWith('api/icon/getDynamicIcon')) {
+        return `<img src="${code}" />`
+    } else if (code.endsWith('.svg') || code.endsWith('.png')) {
+        return `<img src="/emojis/${code}" />`
+    } else {
+        return parseEmoji(code);
+    }
+}
+
 export const buildItemDetail = (block: IBookmarkItemInfo) => {
     // console.debug("::buildItemDetail", block);
     let nodetype = BlockType2NodeType[block.type];
     let icon: any;
     if (nodetype === "NodeDocument") {
-        icon = `<span data-defids="[&quot;&quot;]" class="b3-list-item__graphic popover__block" data-id="${block.id}" style="font-size: 14px;">${parseEmoji(block.icon)}</span>`;
+        icon = `<span data-defids="[&quot;&quot;]" class="b3-list-item__graphic popover__block" data-id="${block.id}" style="font-size: 14px; display: flex;">${buildDocIcon(block.icon)}</span>`;
     } else {
         icon = NodeIcons[nodetype];
         if (icon?.subtypes?.[block?.subtype]) {
