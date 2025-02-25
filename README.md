@@ -1,4 +1,3 @@
-
 This plugin implements a more user-friendly bookmark feature, supporting drag-and-drop addition, bookmark group management, link copying, dynamic queries, and more.
 
 > 🔔 Attention! By default, this plugin will hide the built-in bookmark button in the sidebar of SiYuan. You can disable this default behavior in the settings.
@@ -150,7 +149,8 @@ Version 2.0 introduces a new feature called **Bookmark Sub Views**, designed to 
 1. Create an independent sidebar by going to Settings → "Sub View Management."  
     ​![Sub View Management Interface](asset/image-20250224151916-xv15iit.png)​
 2. Freely assign bookmark groups to different views: Each sub-view can contain numbers of bookmark groups
-    ![Bookmark Group Assignment](asset/image-20250224152016-qhbpwoz.png)​
+
+    ​![image](asset/image-20250224182656-bdutx0o.png)​
 3. The view will be fixed to an independent Dock panel after restart SiYuan.
 
 ## Plugin Settings
