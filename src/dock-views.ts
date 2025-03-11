@@ -3,7 +3,7 @@
  * @Author       : frostime
  * @Date         : 2025-02-22 00:35:14
  * @FilePath     : /src/dock-views.ts
- * @LastEditTime : 2025-02-22 16:46:14
+ * @LastEditTime : 2025-03-08 19:16:16
  * @Description  : 
  */
 import { render } from "solid-js/web";
@@ -31,23 +31,33 @@ export const disposers = {
             disposers.dispose(vid as TBookmarkSubViewId);
         }
     },
-    dispose: (vid: TBookmarkSubViewId) => {
+    dispose: (vid: TBookmarkSubViewId, actions?: {
+        hideIcon?: boolean;
+        deleteIcon?: boolean;
+        deleteDockElement?: boolean;
+    }) => {
         if (disposers._disposer[vid]) {
             disposers._disposer[vid]();
             delete disposers._disposer[vid];
         }
-        if (disposers._ele[vid]) {
+
+        const iconBtn = dockViewIconElement(vid);
+        if (iconBtn && iconBtn.classList.contains('dock__item--active')) {
+            iconBtn.click();
+            if (actions?.hideIcon) {
+                iconBtn.classList.add('fn__none');
+            }
+            if (actions?.deleteIcon) {
+                iconBtn.remove();
+            }
+        }
+
+
+        if (actions?.deleteDockElement && disposers._ele[vid]) {
             const ele = disposers._ele[vid];
             const container = ele?.closest('[data-type="wnd"]')?.closest('.fn__flex-1.fn__flex:not([data-type="wnd"])')
             container?.classList.toggle('fn__none', true);
-            // ele?.remove();
             delete disposers._ele[vid];
-            const iconBtn = dockViewIconElement(vid);
-            if (!iconBtn) return;
-            if (iconBtn.classList.contains('dock__item--active')) {
-                iconBtn.click();
-            }
-            iconBtn?.remove();
         }
     }
 };
@@ -91,9 +101,9 @@ export const initBookmark = async (ele: HTMLElement, sourceView: string) => {
     lazyUpdateModel.update();
 };
 
-export const destroyBookmark = (viewId: TBookmarkGroupId) => {
+export const destroyBookmark = (...params: Parameters<typeof disposers.dispose>) => {
     // rmModel();
-    disposers.dispose(viewId);
+    disposers.dispose(...params);
 };
 
 export const destroyAllBookmark = () => {

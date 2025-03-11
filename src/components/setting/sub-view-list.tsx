@@ -59,7 +59,11 @@ const SubViewList: Component = () => {
                 if (editingView() === viewId) {
                     setEditingView(null);
                 }
-                destroyBookmark(viewId);
+                destroyBookmark(viewId, {
+                    deleteDockElement: true,
+                    // hideIcon: true,
+                    deleteIcon: true
+                });
                 subViews.update(viewId, undefined!);
                 await saveSubViews();
             }
