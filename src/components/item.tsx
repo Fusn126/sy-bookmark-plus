@@ -1,6 +1,6 @@
 import { Component, createEffect, createMemo, createSignal, useContext } from "solid-js";
 import { render } from "solid-js/web";
-import { Menu, openTab, showMessage, openMobileFileById } from "siyuan";
+import { Menu, openTab, showMessage, openMobileFileById, Constants, TProtyleAction } from "siyuan";
 import { buildItemDetail } from "../libs/dom";
 
 import { itemInfo, setGroups, groupMap, configs, configRef } from "../model";
@@ -269,14 +269,19 @@ const Item: Component<IProps> = (props) => {
             openMobileFileById(plugin.app, item().id);
         } else {
             let zoomIn = configRef().zoomInWhenClick;
+            let actions: TProtyleAction[] = [Constants.CB_GET_FOCUS];
             if (item().type === 'd') {
                 zoomIn = false;
+                actions = [...actions, Constants.CB_GET_SCROLL];
+            } else {
+                actions = [...actions, Constants.CB_GET_CONTEXT, Constants.CB_GET_HL];
             }
             openTab({
                 app: plugin.app,
                 doc: {
                     id: item().id,
                     zoomIn: zoomIn,
+                    action: actions,
                 },
             });
         }
