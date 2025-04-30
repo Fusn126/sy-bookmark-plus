@@ -3,7 +3,7 @@
  * @Author       : frostime
  * @Date         : 2024-05-21 20:25:51
  * @FilePath     : /src/libs/dom.ts
- * @LastEditTime : 2025-02-24 14:50:21
+ * @LastEditTime : 2025-04-30 15:26:47
  * @Description  : 
  */
 import { NodeIcons, BlockType2NodeType } from "@/utils/const";
@@ -25,7 +25,7 @@ export const parseEmoji = (code: string) => {
 export const buildDocIcon = (code: string) => {
     if (code.startsWith('api/icon/getDynamicIcon')) {
         return `<img src="${code}" />`
-    } else if (code.endsWith('.svg') || code.endsWith('.png')) {
+    } else if (/\.(svg|png|jpe?g|ico)$/.test(code)) {
         return `<img src="/emojis/${code}" />`
     } else {
         return parseEmoji(code);
