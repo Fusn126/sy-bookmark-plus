@@ -3,9 +3,11 @@
  * @Author       : frostime
  * @Date         : 2024-04-02 22:43:02
  * @FilePath     : /src/utils/const.ts
- * @LastEditTime : 2024-09-14 22:52:01
+ * @LastEditTime : 2025-05-07 12:19:41
  * @Description  : 
  */
+
+import { siyuanVersion } from "@frostime/siyuan-plugin-kits";
 
 export const Svg = {
     Vertical: `<symbol id="iconVertical" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4241"><path d="M383.4 863.6V158.5c0-12.9-7.8-24.6-19.8-29.6s-25.7-2.2-34.9 6.9L76.9 387.7c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l197.2-197.2v627.9c0 17.7 14.3 32 32 32 17.6-0.1 32-14.4 32-32.1zM637.5 158.5v705.1c0 12.9 7.8 24.6 19.8 29.6s25.7 2.2 34.9-6.9L944 634.4c6.2-6.2 9.4-14.4 9.4-22.6s-3.1-16.4-9.4-22.6c-12.5-12.5-32.8-12.5-45.3 0L701.5 786.4V158.5c0-17.7-14.3-32-32-32s-32 14.4-32 32z" p-id="4242"></path></symbol>`,
@@ -116,6 +118,8 @@ export const NodeIcons = {
     }
 };
 
+const LIST_MARK = siyuanVersion().compare('3.1.29') >= 0 ? '-' : '*';
+
 export const RuleTemplate = {
     sql: {
         'random': `select * from blocks\nwhere type='d'\norder by random() limit 5;`,
@@ -135,7 +139,7 @@ order by created desc
         'todo': `
 select * from blocks
 where type = 'i' and subtype = 't'
-and markdown like '* [ ] %'
+and markdown like '${LIST_MARK} [ ] %'
 order by updated desc;`
     },
     attr: {

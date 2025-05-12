@@ -3,7 +3,7 @@
  * @Author       : frostime
  * @Date         : 2024-06-12 19:48:53
  * @FilePath     : /src/index.ts
- * @LastEditTime : 2025-02-22 17:11:19
+ * @LastEditTime : 2025-05-07 11:59:08
  * @Description  : 
  */
 import {
@@ -80,6 +80,9 @@ export default class PluginBookmarkPlus extends Plugin {
         };
     }
 
+    //@ts-ignore
+    declare readonly i18n: I18n;
+
     async onload() {
         //@ts-ignore
         registerPlugin(this);
@@ -112,6 +115,7 @@ export default class PluginBookmarkPlus extends Plugin {
                 initBookmark: initBookmark,
             },
             init() {
+                //@ts-ignore
                 this.data.initBookmark(this.element, 'DEFAULT');
             }
         });
@@ -138,6 +142,7 @@ export default class PluginBookmarkPlus extends Plugin {
                     initBookmark: initBookmark,
                 },
                 init() {
+                    //@ts-ignore
                     this.data.initBookmark(this.element, vid);
                 }
             });

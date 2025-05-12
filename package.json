@@ -1,6 +1,6 @@
 {
   "name": "sy-bookmark-plus",
-  "version": "2.0.1",
+  "version": "2.1.0",
   "type": "module",
   "description": "A more powerful bookmark",
   "repository": "",
@@ -34,7 +34,7 @@
     "vite-plugin-zip-pack": "^1.2.2"
   },
   "dependencies": {
-    "@frostime/siyuan-plugin-kits": "^1.5.4",
+    "@frostime/siyuan-plugin-kits": "^1.5.10",
     "@frostime/solid-signal-ref": "^2.1.0",
     "solid-transition-group": "^0.2.3"
   }
