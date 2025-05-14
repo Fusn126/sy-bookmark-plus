@@ -42,9 +42,13 @@ const useSiyuanBookmarkKeymap = () => {
     let isReplaced = false;
 
     const pluginKeymap = () => {
-        const bookmark = window.siyuan.config.keymap.plugin?.['sy-bookmark-plus'];
-        if (!bookmark) return null;
-        return bookmark?.['F-Misc::Bookmark'];
+        try {
+            const bookmark = window.siyuan.config.keymap.plugin?.['sy-bookmark-plus'];
+            if (!bookmark) return null;
+            return bookmark?.['F-Misc::Bookmark'];
+        } catch (e) {
+            return null;
+        }
     }
 
     return {
