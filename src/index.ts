@@ -3,7 +3,7 @@
  * @Author       : frostime
  * @Date         : 2024-06-12 19:48:53
  * @FilePath     : /src/index.ts
- * @LastEditTime : 2025-05-07 11:59:08
+ * @LastEditTime : 2025-05-14 20:41:34
  * @Description  : 
  */
 import {
@@ -39,7 +39,13 @@ const useSiyuanBookmarkKeymap = () => {
     const bookmarkKeymap = window.siyuan.config.keymap.general.bookmark;
     const initial = bookmarkKeymap.custom || bookmarkKeymap.default;
 
-    const pluginKeymap = () => window.siyuan.config.keymap.plugin['sy-bookmark-plus']?.['F-Misc::Bookmark'];
+    let isReplaced = false;
+
+    const pluginKeymap = () => {
+        const bookmark = window.siyuan.config.keymap.plugin?.['sy-bookmark-plus'];
+        if (!bookmark) return null;
+        return bookmark?.['F-Misc::Bookmark'];
+    }
 
     return {
         initial,
@@ -52,18 +58,19 @@ const useSiyuanBookmarkKeymap = () => {
             `);
             const min = document.querySelector('div.file-tree.sy__bookmark span[data-type="min"]') as HTMLElement;
             min?.click();
-            const keymap = pluginKeymap();
-            if (keymap) {
-                keymap.custom = initial;
+            const siyuanKeymap = pluginKeymap();
+            if (siyuanKeymap) {
+                siyuanKeymap.custom = initial;
+                isReplaced = true;
             }
         },
         // 恢复
         restoreDefault: () => {
             bookmarkKeymap.custom = initial;
             removeStyleDom('hide-bookmark');
-            const keymap = pluginKeymap();
-            if (keymap) {
-                keymap.custom = '';
+            if (isReplaced) {
+                const keymap = pluginKeymap();
+                keymap && (keymap.custom = '');
             }
         }
     }
