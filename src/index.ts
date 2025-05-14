@@ -3,7 +3,7 @@
  * @Author       : frostime
  * @Date         : 2024-06-12 19:48:53
  * @FilePath     : /src/index.ts
- * @LastEditTime : 2025-05-14 20:41:34
+ * @LastEditTime : 2025-05-14 21:18:07
  * @Description  : 
  */
 import {
@@ -35,26 +35,16 @@ import { destroyAllBookmark, dockViewIconElement, dockViewTypeName, initBookmark
 let model: BookmarkDataModel;
 
 
-const useSiyuanBookmarkKeymap = () => {
+const useSiyuanBookmark = () => {
     const bookmarkKeymap = window.siyuan.config.keymap.general.bookmark;
     const initial = bookmarkKeymap.custom || bookmarkKeymap.default;
-
-    let isReplaced = false;
-
-    const pluginKeymap = () => {
-        try {
-            const bookmark = window.siyuan.config.keymap.plugin?.['sy-bookmark-plus'];
-            if (!bookmark) return null;
-            return bookmark?.['F-Misc::Bookmark'];
-        } catch (e) {
-            return null;
-        }
-    }
 
     return {
         initial,
         replaceDefault: () => {
+            // 替换默认的快捷键
             bookmarkKeymap.custom = '';
+
             updateStyleDom('hide-bookmark', `
                 .dock span[data-type="bookmark"] {
                     display: none;
@@ -62,25 +52,17 @@ const useSiyuanBookmarkKeymap = () => {
             `);
             const min = document.querySelector('div.file-tree.sy__bookmark span[data-type="min"]') as HTMLElement;
             min?.click();
-            const siyuanKeymap = pluginKeymap();
-            if (siyuanKeymap) {
-                siyuanKeymap.custom = initial;
-                isReplaced = true;
-            }
         },
         // 恢复
         restoreDefault: () => {
+            // 恢复默认的快捷键
             bookmarkKeymap.custom = initial;
             removeStyleDom('hide-bookmark');
-            if (isReplaced) {
-                const keymap = pluginKeymap();
-                keymap && (keymap.custom = '');
-            }
         }
     }
 }
 
-export const bookmarkKeymap = useSiyuanBookmarkKeymap();
+export const bookmarkKeymap = useSiyuanBookmark();
 
 
 export default class PluginBookmarkPlus extends Plugin {
@@ -169,6 +151,7 @@ export default class PluginBookmarkPlus extends Plugin {
     private replaceDefaultBookmark() {
         bookmarkKeymap.replaceDefault();
 
+        // 添加自定义的快捷键打开我们的默认视图
         this.addCommand({
             langKey: 'F-Misc::Bookmark',
             langText: 'F-misc Bookmark',
