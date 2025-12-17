@@ -3,7 +3,7 @@ import Group from "./group";
 import { confirm, Menu, Plugin, showMessage } from "siyuan";
 import { configs, getModel, groups, subViews } from "../model";
 
-import { BookmarkContext } from "./context";
+import { BookmarkContext, setGroupDrop } from "./context";
 
 
 import { i18n, renderI18n } from "@/utils/i18n";
@@ -68,6 +68,9 @@ const BookmarkComponent: Component<{
 
     const bookmarkRefresh = () => {
         setFnRotate("fn__rotate");
+        setDoAction("");
+        setTimeout(() => setDoAction('AllCollapse'));
+        setGroupDrop("");
         model.updateViews(props.sourceView).then(() => {
             setTimeout(() => {
                 setFnRotate("");
@@ -206,7 +209,8 @@ const BookmarkComponent: Component<{
                     class="block__icon ariaLabel"
                     aria-label={I18N.logo.expand}
                     onClick={() => {
-                        setDoAction('AllExpand');
+                        setDoAction("");
+                        setTimeout(() => setDoAction('AllExpand'));
                     }}
                 >
                     <svg>
@@ -219,7 +223,8 @@ const BookmarkComponent: Component<{
                     class="block__icon ariaLabel"
                     aria-label={I18N.logo.collapse}
                     onClick={() => {
-                        setDoAction('AllCollapse');
+                        setDoAction("");
+                        setTimeout(() => setDoAction('AllCollapse'));
                     }}
                 >
                     <svg>
