@@ -3,8 +3,8 @@
  * @Author       : frostime
  * @Date         : 2024-06-12 19:48:53
  * @FilePath     : /src/index.ts
- * @LastEditTime : 2025-05-14 21:28:18
- * @Description  : 
+ * @LastEditTime : 2026-02-10 22:25:54
+ * @Description  :
  */
 import {
     Plugin,
@@ -30,7 +30,7 @@ import { loadSdk, unloadSdk } from "./sdk";
 import { registerPlugin } from "@frostime/siyuan-plugin-kits";
 import { enableAutoRefresh } from "./model/auto-refresh";
 
-import { destroyAllBookmark, dockViewIconElement, dockViewTypeName, initBookmark } from "./dock-views";
+import { destroyAllBookmark, dockViewIconElement, registerDockViewTypeName, getDockViewTypeName, initBookmark } from "./dock-views";
 
 let model: BookmarkDataModel;
 
@@ -92,8 +92,9 @@ export default class PluginBookmarkPlus extends Plugin {
             this.replaceDefaultBookmark();
         }
 
+        registerDockViewTypeName('DEFAULT', 'RightBottom');
         this.addDock({
-            type: dockViewTypeName('DEFAULT'),
+            type: getDockViewTypeName('DEFAULT'),
             config: {
                 position: 'RightBottom',
                 size: {
@@ -119,8 +120,10 @@ export default class PluginBookmarkPlus extends Plugin {
             if (view.icon?.type === 'symbol') {
                 icon = view.icon.value;
             }
+            const position = view.dockPosition ?? 'RightBottom';
+            registerDockViewTypeName(vid as TBookmarkSubViewId, position);
             this.addDock({
-                type: dockViewTypeName(vid),
+                type: getDockViewTypeName(vid),
                 config: {
                     position: view.dockPosition ?? 'RightBottom',
                     size: {
@@ -146,6 +149,16 @@ export default class PluginBookmarkPlus extends Plugin {
         if (configRef().autoRefreshTemplatingRuleOnSwitchProtyle) {
             enableAutoRefresh();
         }
+    }
+
+    /**
+     * 如果云端发生变化，影响到当前插件的 storage 存储（例如另一个设备上插件更新了数据），就会调用这个回调函数
+     * 思源默认的行为是 disable 这个插件再启用，相当于会再次走插件初始化过程
+     * 如果集成并重写这个方法，则会覆盖默认行为
+     */
+    onDataChanged(): void {
+        console.debug(`[Bookmark+] onDataChanged called, reloading model`);
+        model.reload();
     }
 
     private replaceDefaultBookmark() {

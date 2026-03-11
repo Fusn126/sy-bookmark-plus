@@ -4,6 +4,7 @@ import { getBlocks, getDocInfos } from "./data";
 import { rmItem, insertItem, moveItem } from "../libs/op";
 import { showMessage } from "siyuan";
 import { batch } from "solid-js";
+import { unwrap } from "solid-js/store";
 
 import { debounce, PromiseLimitPool } from "@frostime/siyuan-plugin-kits";
 
@@ -12,17 +13,18 @@ import { i18n, renderI18n } from "@/utils/i18n";
 import {
     itemInfo,
     setItemInfo,
+    clearItemInfo,
     setGroups,
     groupMap,
-    groups,
     loadConfig,
     loadSubViews,
-    saveGroupMap,
     saveSubViews,
-    subViews
+    subViews,
+    defaultView
 } from './stores';
 import { getRule } from "./rules";
 import { formatItemTitle } from "./utils";
+import { CURRENT_BOOKMARK_SCHEMA, migrateBookmarkStorage } from "./migration";
 export * from './stores';
 
 const StorageNameBookmarks = 'bookmarks';  //书签
@@ -37,12 +39,42 @@ export class BookmarkDataModel {
         this.plugin = plugin;
     }
 
+    private makeGroupsRecord(): Record<TBookmarkGroupId, IBookmarkGroup> {
+        let result: Record<TBookmarkGroupId, IBookmarkGroup> = {};
+
+        for (let [id, group] of groupMap()) {
+            result[id] = unwrap(group);
+            let items = unwrap(result[id].items);
+            if (group.type === 'dynamic') {
+                items = items.filter(item => item.style);
+            }
+            result[id].items = items;
+        }
+
+        return result;
+    }
+
+    private makeBookmarkStorage(): IBookmarkStorageV2 {
+        const groupsRecord = this.makeGroupsRecord();
+        const groupIds = new Set(Object.keys(groupsRecord));
+        const defaultViewGroups = (defaultView().groups ?? []).filter((gid) => groupIds.has(gid));
+
+        return {
+            schema: CURRENT_BOOKMARK_SCHEMA,
+            groups: groupsRecord,
+            defaultView: {
+                groups: defaultViewGroups
+            }
+        };
+    }
+
     async load() {
-        let bookmarks = await this.plugin.loadData(StorageNameBookmarks + '.json') as { [key: TBookmarkGroupId]: IBookmarkGroup };
+        let bookmarksRaw = await this.plugin.loadData(StorageNameBookmarks + '.json');
         // let configs_ = await this.plugin.loadData(StorageFileConfigs);
         await loadConfig();
         await loadSubViews();
         let snapshot: { [key: BlockId]: IBookmarkItemInfo } = await this.plugin.loadData(StorageFileItemSnapshot);
+        const { storage, migrated } = migrateBookmarkStorage(bookmarksRaw);
 
         // if (configs_) {
         //     setConfigs({ ...configs, ...configs_ });
@@ -52,7 +84,7 @@ export class BookmarkDataModel {
         snapshot = snapshot ?? {};
 
         const allGroups = [];
-        for (let [_, group] of Object.entries(bookmarks)) {
+        for (let [_, group] of Object.entries(storage.groups ?? {})) {
             let items: IItemCore[] = group.items.map(item => ({ id: item.id, style: item?.style }));
 
             let groupV2: IBookmarkGroup = { ...group, items };
@@ -78,12 +110,40 @@ export class BookmarkDataModel {
             allGroups.forEach((groupV2) => {
                 setGroups((gs) => [...gs, groupV2])
             })
+            defaultView.update({
+                groups: [...(storage.defaultView?.groups ?? [])]
+            });
         })
+
+        if (migrated) {
+            await this.saveCore();
+        }
+    }
+
+    /**
+     * 重新加载数据（清空后重新加载）
+     * 用于 onDataChanged 回调，处理云端数据同步变化
+     * - 清空现有数据（groups + itemInfo）
+     * - 重新从存储加载
+     * - 更新所有动态规则和静态项目元数据
+     * 注意：不会重新加载/注销 dock，仅更新底层数据
+     */
+    async reload() {
+        // 清空现有数据
+        setGroups(() => []);
+        clearItemInfo();
+
+        // 重新加载数据
+        await this.load();
+
+        // 刷新所有视图的动态规则和静态项目元数据
+        await this.updateViews();
     }
 
     private async saveCore(fpath?: string) {
         // console.debug('save bookmarks');
-        await saveGroupMap(fpath);
+        const bookmarks = this.makeBookmarkStorage();
+        await this.plugin.saveData(fpath ?? StorageNameBookmarks + '.json', bookmarks);
         await saveSubViews();
         await this.plugin.saveData(StorageFileItemSnapshot, itemInfo);
     }
@@ -119,9 +179,9 @@ export class BookmarkDataModel {
 
         // 如果 viewId 为 undefined，那么更新所有的视图
         if (viewId === 'DEFAULT' || viewId === undefined) {
-            groups.forEach(group => {
-                if (group.hidden) return;
-                gidForUpdate.add(group.id);
+            const defaultGroups = defaultView().groups ?? [];
+            defaultGroups.forEach((gid) => {
+                gidForUpdate.add(gid);
             });
         }
 
@@ -409,9 +469,48 @@ export class BookmarkDataModel {
         };
 
         setGroups((gs) => [...gs, group]);
+        if (hidden !== true) {
+            defaultView.update('groups', (groupIds) => {
+                if (groupIds.includes(group.id)) return groupIds;
+                return [...groupIds, group.id];
+            });
+        }
         this.updateDynamicGroup(group);
         this.save();
         return group;
+    }
+
+    addGroupToDefaultView(groupId: TBookmarkGroupId) {
+        if (!groupMap().has(groupId)) return false;
+        let changed = false;
+        defaultView.update('groups', (groupIds) => {
+            if (groupIds.includes(groupId)) return groupIds;
+            changed = true;
+            return [...groupIds, groupId];
+        });
+        if (changed) this.save();
+        return changed;
+    }
+
+    removeGroupFromDefaultView(groupId: TBookmarkGroupId) {
+        let changed = false;
+        defaultView.update('groups', (groupIds) => {
+            if (!groupIds.includes(groupId)) return groupIds;
+            changed = true;
+            return groupIds.filter((gid) => gid !== groupId);
+        });
+        if (changed) this.save();
+        return changed;
+    }
+
+    moveDefaultViewGroup(fromIndex: number, toIndex: number) {
+        const groupsInView = defaultView().groups ?? [];
+        if (fromIndex < 0 || toIndex < 0 || fromIndex >= groupsInView.length || toIndex >= groupsInView.length || fromIndex === toIndex) {
+            return false;
+        }
+        defaultView.update('groups', (groupIds) => moveItem(groupIds, fromIndex, toIndex));
+        this.save();
+        return true;
     }
 
     async updateGroupRule(gid: TBookmarkGroupId, ruleInput: string) {
@@ -423,7 +522,27 @@ export class BookmarkDataModel {
 
     delGroup(id: TBookmarkGroupId) {
         if (groupMap().has(id)) {
-            setGroups((gs: IBookmarkGroup[]) => gs.filter((g) => g.id !== id));
+            batch(() => {
+                setGroups((gs: IBookmarkGroup[]) => gs.filter((g) => g.id !== id));
+                defaultView.update('groups', (groupIds) => groupIds.filter((gid) => gid !== id));
+                subViews.update((views) => {
+                    const next = { ...views };
+                    for (const viewId of Object.keys(next)) {
+                        const view = next[viewId];
+                        if (!view) continue;
+                        if (view.groups.includes(id) || view.expand[id] !== undefined) {
+                            const expand = { ...view.expand };
+                            delete expand[id];
+                            next[viewId] = {
+                                ...view,
+                                groups: view.groups.filter((gid) => gid !== id),
+                                expand
+                            };
+                        }
+                    }
+                    return next;
+                });
+            });
             this.save();
             return true;
         } else {
@@ -445,6 +564,38 @@ export class BookmarkDataModel {
         } else {
             return false;
         }
+    }
+
+    async editGroup(
+        id: TBookmarkGroupId,
+        data: {
+            name?: string;
+            icon?: IBookmarkGroup['icon'];
+            rule?: IDynamicRule;
+        }
+    ) {
+        const group = groupMap().get(id);
+        if (!group) return false;
+
+        batch(() => {
+            if (data.name !== undefined) {
+                setGroups((g) => g.id === id, 'name', data.name);
+            }
+            if (data.icon !== undefined) {
+                setGroups((g) => g.id === id, 'icon', data.icon);
+            }
+            if (group.type === 'dynamic' && data.rule !== undefined) {
+                setGroups((g) => g.id === id, 'rule', data.rule);
+            }
+        });
+
+        if (group.type === 'dynamic' && data.rule !== undefined) {
+            const updatedGroup = groupMap().get(id);
+            await this.updateDynamicGroup(updatedGroup);
+        }
+
+        this.save();
+        return true;
     }
 
     addItem(gid: TBookmarkGroupId, item: IBookmarkItem): boolean | 'exists' {
@@ -496,9 +647,9 @@ export class BookmarkDataModel {
 
     /**
      * 将 item 移动到 gid 下
-     * @param gid 
-     * @param id 
-     * @returns 
+     * @param gid
+     * @param id
+     * @returns
      */
     transferItem(fromGroup: TBookmarkGroupId, toGroup: TBookmarkGroupId, item: IBookmarkItemInfo) {
         if (fromGroup === toGroup) {
